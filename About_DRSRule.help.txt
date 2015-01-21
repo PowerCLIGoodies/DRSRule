@@ -1,0 +1,171 @@
+TOPIC
+    about_DRSRule
+
+SHORT DESCRIPTION
+    The DRSRule module allows you to work with all types of vSphere DRS rules.
+    The module works with affinity/anti-affinity VM rules and VM to VMHost rules.
+    The module provides support for VM and VMHost groups.
+
+LONG DESCRIPTION
+    The DRSRule module was written to provide PowerShell support for all types
+    of DRS rules that are available.  The module leverages some of the VMware PowerCLI
+    cmdlets, and requires that PowerCLI is installed on the Windows machine on which the
+    DRSRule module shall be used.
+
+DRSRule CMDLETS
+    The DRSRule module contains the following cmdlets.
+
+    New-DrsVMGroup                  Create a DRS VM group
+    New-DrsVMHostGroup              Create a DRS VMHost group
+    New-DrsVMToVMHostRule           Create a DRS VM to VMHost rule
+    New-DrsVMToVMRule               Create a DRS VM to VM rule
+    Get-DrsVMGroup                  Retrieve DRS VM groups
+    Get-DrsVMHostGroup              Retrieve DRS VMHost groups
+    Get-DrsVMToVMHostRule           Retrieve DRS VM to VMHost rules
+    Get-DrsVMToVMRule               Retrieve DRS VM to VM rules
+    Set-DrsVMGroup                  Change a DRS VM group
+    Set-DrsVMHostGroup              Change a DRS VMHost group
+    Set-DrsVMToVMHostRule           Change a DRS VM to VMHost rule
+    Set-DrsVMToVMRule               Change a DRS VM to VM rule
+    Remove-DrsVMGroup               Remove a DRS VM group
+    Remove-DrsVMHostGroup           Remove a DRS VMHost group
+    Remove-DrsVMToVMHostRule        Remove a DRS VM to VMHost rule
+    Remove-DrsVMToVMRule            Remove a DRS VM to VM rule
+    Export-DrsRule                  Save all DRS groups and rules to a JSON file
+    Import-DrsRule                  Import DRS groups and rules from a JSON file
+
+DRS Group and Rule Concept
+    In vSphere DRS you can define "rules" that control the placement of virtual machines
+    on hosts within a cluster.
+
+    There are 2 types of rules:
+    - affinity/anti-affinity rules between individual virtual machines
+    - affinity/anti-affinity rules between groups of virtual machines and groups of hosts in a cluster
+
+    The rules that define affinity/anti-affinity between a group of virtual machines and a group of hosts,
+    can be a requirement ("shall") or a preference ("should")
+
+QUICK START
+    To execute any of the following cmdlets from the DRSRule module, you need
+    - to have loaded the PowerCLI module
+    - to be connected to a vCenter
+
+    The following command create a DRS VM affinity rule, on a cluster called MyCluster, between two virtual machines, called vm1 and vm2.
+    The rule will be enabled.
+
+        New-DrsVMToVMRule -Name 'Affinity Rule' -Cluster MyCluster -VM vm1,vm2 -KeepTogether -Enabled
+
+    To create a VM anti-affinity rule, the KeepTogether switch needs to be set to $False.
+
+        New-DrsVMToVMRule -Name 'Anti-affinity Rule' -Cluster MyCluster -VM vm1,vm2 -KeepTogether:$false -Enabled
+
+    If you want to change a DRS VM to VM rule, for example to replace virtual machine vm2 by another virtual machine called vm3,
+    you can do the following
+
+        Get-DrsVMToVMRule -Name 'Affinity Rule' | Set-DrsVMToVMRule -VM vm1,vm3
+
+    First you retrieve the rule, then you pass the DrsRule object over the pipeline to the Set-DrsVMToVMRule cmdlet.
+
+    When a DRS VM to VM rule is not needed anymore, you can easily remove it.
+
+        Get-DrsVMToVMRule -Name 'Affinity Rule' | Remove-DrsVMToVMRule -Confirm:$false
+
+    Note that you will be prompted for a confirmation, if you leave out the Confirm switch.
+
+    Another type of DRS rules handles connecting a group of virtual machines to a group of ESXi hosts.
+    To use such a DRS VM to VMHost rule, you will first need to create the groups.
+
+    A DRS VM group can contain one or more virtual machines.
+
+        New-DrsVMGroup -Name 'VM Group' -VM vm1,vm2 -Cluster cluster1
+
+    As with all cmdlets in the DRSRule that have a New verb, the newly created group will be displayed.
+
+        Name        Cluster        UserCreated       VM
+        ----        -------        -----------       --
+        VM Group    Cluster1       True              {VM1, VM2}
+
+    You can change these groups with the following cmdlet
+
+        Get-DrsVMGroup -Name 'VM Group' | Set-DrsVMGroup -VM vm3 -Append
+
+    The use of the Append switch determines if the virtual machines that you specify on the VM parameter will be added to
+    the virtual machines that are already defined in the group, or if they will replace the virtual machines.
+    The ouput for the previous line will be
+
+        Name        Cluster        UserCreated       VM
+        ----        -------        -----------       --
+        VM Group    Cluster1       True              {VM1, VM2, VM3}
+
+    In a similar way you can create a DRS VMHost group
+
+        New-DrsVMHostGroup -Name 'VMHost Group' -VMHost esx1*,esx2* -Cluster cluster1
+
+    Notice how the values we pass on the VMHost parameter contain a masking character. This avoids having the type the full
+    vmhost name. On the console you will see
+
+        Name            Cluster        UserCreated       VMHost
+        ----            -------        -----------       --
+        VMHost Group    Cluster1       True              {esx1.local.test, esx2.local.test}
+
+    Now that we have a VM and a VMHost group, we can create a DRS VM to VMHost rule.
+    If we want these virtual machines to always run on these ESXi nodes, we can define a DRS rule as follows.
+
+        $ruleSplat = @{
+            Name = 'Required Affinity'
+            AffineHostGroupName = 'VMHost Group'
+            VMGroupName = 'VM Group'
+            Cluster = 'cluster1'
+            Mandatory = $True
+        }
+        New-DrsVMToVMHostRule @ruleSplat
+
+     Notice how we used 'splatting' to specify the parameters for the cmdlet.
+     This example creates a required VM to VMHost rule, that is accomplished by the Mandatory switch.
+
+     If we want to change the rule we created in the previous example, we have a couple of options.
+     We can retrieve the rule, remove it and then create the new DRS VM to VMHost rule.
+
+        Get-DrsVMToVMHostRule -Name 'Required Affinity' | Remove-DrsVMToVMHostRule -Confirm:$False
+        $ruleSplat = @{
+            Name = 'Required Affinity'
+            AffineHostGroupName = 'VMHost Group'
+            VMGroupName = 'VM Group'
+            Cluster = 'cluster1'
+            Mandatory = $True
+            Enabled = $False
+        }
+        New-DrsVMToVMHostRule @ruleSplat
+
+
+     Or we can use the Set cmdlet.
+
+         Set-DrsVMToVMHostRule -Name 'Required Affinity' -Enabled:$False
+
+     But there is a third option, where the Force switch allows you to replace an existing DRS rule directly with the New cmdlet.
+
+        $ruleSplat = @{
+            Name = 'Preferred AntiAffinity'
+            AntiAffineHostGroupName = 'VMHost Group'
+            VMGroupName = 'VM Group'
+            Cluster = 'cluster1'
+            Mandatory = $False
+            Force = $True
+        }
+        New-DrsVMToVMHostRule @ruleSplat
+
+     There are many occasions where you want to be able to export and import your DRS groups and rules.
+     The DRSRule module provides this functionality with two cmdlets. These cmdlets use a JSON file to store and
+     retrieve your DRS rules and groups.
+     To export your DRS rules and groups, you can do
+
+         Export-DrsRule -Cluster cluster1 -Path drs.json
+
+     This will export all DRS rules and groups that are defined on Cluster1, to a JSON file in your current directory.
+     To import these DRS rules and groups, you can do
+
+         Import-DrsRule -Path drs.json -Cluster cluster1
+
+SEE ALSO
+    https://pubs.vmware.com/vsphere-55/topic/com.vmware.vsphere.resmgmt.doc/GUID-FF28F29C-8B67-4EFF-A2EF-63B3537E6934.html
+    http://blog.pluralsight.com/vmware-storage-drs-rules

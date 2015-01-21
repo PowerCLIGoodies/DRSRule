@@ -1,0 +1,2196 @@
+<?xml version="1.0"?>
+<ModuleObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fVersion="1.1" type="Script" mclass="Module" useSupports="false">
+  <Name>DRSRule</Name>
+  <Version>0.1.0</Version>
+  <Description>Module with functions to manage VMware DRS rule items (rules, groups, etc)</Description>
+  <HasManifest>true</HasManifest>
+  <OverridePostCount>false</OverridePostCount>
+  <FetchPostCount xsi:nil="true" />
+  <Cmdlets>
+    <CmdletObject verb="Export" noun="DrsRule">
+      <Name>Export-DrsRule</Name>
+      <GeneralHelp>
+        <Synopsis>Export DRS rules and groups as JSON</Synopsis>
+        <Description>This cmdlet gets the specified DRS items for the given DRS Clusters, and exports their info as JSON to the given file.
+These include DRS VM groups, DRS VMHost groups, DRS VM to VM rules, and DRS VM to VMHost rules.
+
+The exported JSON is suitable (targeted) for use in the Import-DrsRule cmdlet, for recreating exported rule/group objects.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Path Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Syntax>
+        <string>Export-DrsRule [[-Name] &lt;String&gt;] [[-Cluster] &lt;PSObject[]&gt;] [-Path &lt;String&gt;]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of rule / DRS group info to get and export. If not specified, will return all rule/group info</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster for which to get DRS info</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Path</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Path of output file in which to put DRS info in JSON format (relative or absolute). File will be created if non-existent, or overwritten if existent</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Export-DrsRule -Path C:\importantStuff\myDrsRuleInfo_$((Get-Date).ToString('ddMMMyyyy_HHmm')).json</Cmd>
+          <Description>Exports the DRS group/rule information for all clusters in JSON format, stored in given file with the right-now date/time stamp in the filename.</Description>
+          <Output>    Directory: C:\importantStuff
+
+
+Mode                LastWriteTime     Length Name
+----                -------------     ------ ----
+-a---         1/16/2015  11:10 PM       5520 myDrsRuleInfo_16Jan2015_2310.json</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-Cluster NewCluster10 | Export-DrsRule -Name *grp0 -Path c:\temp\drsInfo_NewCluster10.json -Verbose</Cmd>
+          <Description>For this cluster, export the DRS rules/groups whose names are like "*grp0".  The -Verbose parameter causes the cmdlet to include a verbose message about the number of rules/groups exported, and the file name to which the information was written.</Description>
+          <Output>VERBOSE: Exported and saved information for '4' DRS rules/groups to 'c:\temp\drsInfo_NewCluster10.json'
+
+
+    Directory: C:\temp
+
+
+Mode                LastWriteTime     Length Name
+----                -------------     ------ ----
+-a---         1/17/2015  12:08 AM       1605 drsInfo_NewCluster10.json
+</Output>
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Get-Cluster NewCluster10 | Export-DrsRule -Name doesNotExist* -Path c:\temp\drsInfo_NewCluster10.json -Verbose</Cmd>
+          <Description>Here, cluster NewCluster10 has no DRS groups or rules defined, yet.  So, Export-DrsRule (with the -Verbose parameter) returns a verbose message with information to that effect.  No .json file is created.</Description>
+          <Output>VERBOSE: No DRS group/rule found for like name 'doesNotExist*' in cluster with name like 'NewCluster10'</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Import-DrsRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Get" noun="DrsVMGroup">
+      <Name>Get-DrsVMGroup</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet retrieves the DRS VM groups.</Synopsis>
+        <Description>This cmdlet retrieves the DRS VM groups.
+It returns DRS VM groups that correspond to the filter criteria provided by the cmdlet parameters.
+
+The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMGroup];[VMware.Vim.ClusterVmGroup]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the given DRS VM group, or a raw vSphere object
+</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster ReturnRawGroup Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Syntax>
+        <string>Get-DrsVMGroup [[-Name] &lt;String&gt;] [[-Cluster] &lt;PSObject[]&gt;] [-ReturnRawGroup]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of DRS VM Group to get (or, all if no name specified)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster from which to get DRS VM group (or, all clusters if no name specified)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ReturnRawGroup</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch:  return "raw" VMware.Vim.ClusterVmGroup object (contains less info, but useful to other functions that can consume this raw object)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Get-DRSVMGroup -Name '*VM Group 1*'</Cmd>
+          <Description>Returns all DRS VM groups with name like '*VM Group 1*'</Description>
+          <Output>Name               Cluster         UserCreated        VM
+----               -------         -----------        --
+VM Group 1         Cluster1        True               {VM1,VM2}
+VM Group 12        Cluster1        True               {VM3}
+New VM Group 100   Cluster2        True               {VM4,VM5,VM6}</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-DRSVMGroup -Cluster Cluster1 -Name 'VM Group 1'</Cmd>
+          <Description>The DRS VM group with the exact name 'VM Group 1' from Cluster1 will be returned.</Description>
+          <Output>Name               Cluster         UserCreated        VM
+----               -------         -----------        --
+VM Group 1         Cluster1        True               {VM1,VM2}</Output>
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Get-Cluster Cluster2 | Get-DrsVmGroup</Cmd>
+          <Description>Returns all DRS VM groups in cluster "Cluster2"</Description>
+          <Output>Name               Cluster         UserCreated        VM
+----               -------         -----------        --
+VM Group 5         Cluster2        True               {VM101,VM102}
+testVMGroup        Cluster2        True               {VM0,VM1001,VM1002}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>New-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Get" noun="DrsVMHostGroup">
+      <Name>Get-DrsVMHostGroup</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet retrieves the DRS VMHost groups.</Synopsis>
+        <Description>This cmdlet retrieves the DRS VM groups.
+It returns DRS VM groups that correspond to the filter criteria provided by the cmdlet parameters.
+
+The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMHostGroup];[VMware.Vim.ClusterHostGroup]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the given DRS VMHost group, or a raw vSphere object
+</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster ReturnRawGroup Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Syntax>
+        <string>Get-DrsVMHostGroup [[-Name] &lt;String&gt;] [[-Cluster] &lt;PSObject[]&gt;] [-ReturnRawGroup]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of DRS VM Group to get (or, all if no name specified)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster from which to get DRS VMHost group (or, all clusters if no name specified)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ReturnRawGroup</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch:  return "raw" VMware.Vim.ClusterHostGroup object (contains less info, but useful to other functions that can consume this raw object)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Get-DRSVMHostGroup -Name '*VMHost Group 1*'</Cmd>
+          <Description>Returns all DRS VMHost groups with name like '*VMHost Group 1*'</Description>
+          <Output>Name               Cluster         UserCreated        VMHost
+----               -------         -----------        ------
+VMHost Group 1     Cluster1        True               {esx1,esx2}
+VMHost Group 12    Cluster1        True               {esx3}
+New VMHost Group 1 Cluster2        True               {esx4,esx5,esx6}</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-DRSVMHostGroup -Cluster Cluster1 -Name 'VMHost Group 1'</Cmd>
+          <Description>The DRS VMHost group with the exact name 'VMHost Group 1' from Cluster1 will be returned.</Description>
+          <Output>Name               Cluster         UserCreated        VMHost
+----               -------         -----------        ------
+VMHost Group 1     Cluster1        True               {esx1,esx2}</Output>
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Get-Cluster Cluster2 | Get-DrsVMHostGroup</Cmd>
+          <Description>Returns all DRS VMHost groups in cluster "Cluster2"</Description>
+          <Output>Name               Cluster         UserCreated        VMHost
+----               -------         -----------        ------
+oldVMHostGroup     Cluster2        True               {esx11,esx12}
+VMHost Group DR    Cluster2        True               {esx13}
+New VMHost Grp 3   Cluster2        True               {esx14,esx15,esx16}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>New-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Get" noun="DrsVMToVMHostRule">
+      <Name>Get-DrsVMToVMHostRule</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet retrieves the DRS VM to VMHost rules.</Synopsis>
+        <Description>This cmdlet retrieves the DRS VM to VMHost rules.
+It returns a number of DRS VM to VMHost rules that correspond to the filter criteria provided by the cmdlet parameters.
+
+The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMToVMHostRule];[VMware.Vim.ClusterVmHostRuleInfo]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the given DRS VM to VMHost rule, or a raw vSphere object
+</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster ReturnRawRule Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Syntax>
+        <string>Get-DrsVMToVMHostRule [[-Name] &lt;String&gt;] [[-Cluster] &lt;PSObject[]&gt;] [-ReturnRawRule]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of DRS VM affinity/antiaffinity rule to get (or, all if no name specified)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster from which to get DRS VM-to-VM rule (or, all clusters if no name specified)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ReturnRawRule</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch:  return DRS VM to VM rule as "raw" VMware.Vim.ClusterHostGroup object (contains less info, but useful to other functions that can consume this raw object)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Get-DrsVMToVMHostRule -Name 'Rule 1*'</Cmd>
+          <Description>Returns all DRS VM to VMHost rules with name like 'Rule 1*'</Description>
+          <Output>Name         Cluster         Enabled     Mandatory   VMGroupName
+----         -------         -------     ---------   -----------
+Rule 1       Cluster1        False       False       VM Group 1
+Rule 11      Cluster2        True        True        All VM</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-DrsVMtoVMHostRule -Cluster Cluster[12]</Cmd>
+          <Description>Returns all DRS VM to VMHost rules in clusters named "Cluster1" and "Cluster2"</Description>
+          <Output>Name         Cluster         Enabled     Mandatory   VMGroupName
+----         -------         -------     ---------   -----------
+Rule 0       Cluster1        True        False       VM Group 1
+Rule 1       Cluster1        False       False       VM Group 12
+Rule 2       Cluster1        False       False       VM Group 31
+Rule 11      Cluster2        True        True        All VM
+Rule_bak     Cluster2        True        False       testVMGroup
+Rule_toDel   Cluster2        False       True        VM Group 5</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>New-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Get" noun="DrsVMToVMRule">
+      <Name>Get-DrsVMToVMRule</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet retrieves the DRS VM to VM rules.</Synopsis>
+        <Description>This cmdlet retrieves the DRS VM to VM rules.
+It returns DRS VM to VM rules that correspond to the filter criteria provided by the cmdlet parameters.
+The VM to VM rules can be either affinity- or anti-affinity rules.
+
+The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMToVMRule];[VMware.Vim.ClusterAffinityRuleSpec];[VMware.Vim.ClusterAntiAffinityRuleSpec]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the given DRS VM to VM rule, or a raw vSphere object;
+
+</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster ReturnRawRule Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable" />
+      </ParamSets>
+      <Syntax>
+        <string>Get-DrsVMToVMRule [[-Name] &lt;String&gt;] [[-Cluster] &lt;PSObject[]&gt;] [-ReturnRawRule]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of DRS VM-to-VMHost rule to get (or, all if no name specified)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster from which to get DRS VM-to-VMHost rule (or, all clusters if no name specified)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ReturnRawRule</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch:  return DRS VM to VM rule as "raw" VMware.Vim.ClusterVmHostRuleInfo object (contains less info, but useful to other functions that can consume this raw object)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Get-DrsVMToVMRule -Name 'Rule 1*'</Cmd>
+          <Description>Returns all DRS VM to VM rules with name like 'Rule 1*'</Description>
+          <Output>Name         Cluster         Enabled     KeepTogether  Mandatory   VM
+----         -------         -------     ------------  ---------   --
+Rule 1       Cluster1        False       False         False       {VM1, VM2}
+Rule 11      Cluster2        True        True          True        {VM3, VM4}</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-Cluster Cluster2 | Get-DrsVMtoVMHostRule</Cmd>
+          <Description>Returns all DRS VM to VM rules in Cluster2</Description>
+          <Output>Name         Cluster         Enabled     KeepTogether  Mandatory   VM
+----         -------         -------     ------------  ---------   --
+Rule 0       Cluster2        False       False         False       {VM101, VM102}
+Rule 11      Cluster2        True        True          True        {VM103, VM014}
+Rule_old     Cluster2        False       True          True        {VM110, VM111}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>New-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Import" noun="DrsRule">
+      <Name>Import-DrsRule</Name>
+      <GeneralHelp>
+        <Synopsis>Import DRS rules and groups from exported info in JSON</Synopsis>
+        <Description>This cmdlet creates specified DRS items for the given DRS Clusters.  The cmdlet gets the information about the items to create from the exported DRS data generated by the Export-DrsRule cmdlet.  The Path parameter is to the JSON file that resutls from Export-DrsRule.
+The items recreated include DRS VM groups, DRS VMHost groups, DRS VM to VM rules, and DRS VM to VMHost rules.  One can "overwrite" existing groups/rules with the provided -Force parameter.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMGroup];[DRSRule.VMHostGroup];[DRSRule.VMToVMHostRule];[DRSRule.VMToVMRule]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the new DRS VM group;
+Object with information about the new DRS VMHost group;
+Object with information about the new DRS VM to VMHost rule;
+Object with information about the new DRS VM to VM rule</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Path Name Cluster Force Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Import-DrsRule [[-Path] &lt;String&gt;] [[-Name] &lt;String&gt;] [[-Cluster] &lt;PSObject[]&gt;] [-Force] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="0" globbing="false">
+          <Name>Path</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Filespec of JSON file with exported DRS rule info</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="true" pos="1" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of rule/group to import, or all if no name specified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="true" pos="2" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster whose exported rules to import, and in which to recreate said rules. If not specified, will import rules from in the JSON file without filtering on cluster</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Force</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch to specify that the import "overwrite" existing groups/rules of same source name in target cluster ($true), or to not import groups/rules if conflict/already existing ($false or not specified).  If $false and conflict, error thrown for each conflicting group/rule.
+"Overwrite" is accomplished by 0) removal of original group/rule, 1) creation of new group/rule with same name</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>ShowOnly</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch to have cmdlet report-only.  This is so as to just get the informational objects from the JSON file, with no further action.  The filtering of the rules/groups by the specified Name and Cluster still takes place, but then the cmdlet returns the informational objects whose details were retrieved from the given JSON file; no rule/group creation is attempted.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Import-DrsRule -Path c:\temp\myDrsRuleInfo_backup.json</Cmd>
+          <Description>Imports all of the DRS rules/groups whose info is in the given JSON file.  The JSON file is of objects exported from the environment via the Export-DrsRule cmdlet.</Description>
+          <Output>Name               Cluster         UserCreated        VM
+----               -------         -----------        --
+VM Group 1         Cluster1        True               {VM1,VM2}
+VM Group 12        Cluster1        True               {VM3}
+New VM Group 100   Cluster2        True               {VM4,VM5,VM6}
+...</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Import-DrsRule -Path \\fileserver.dom.com\share\myDrsRuleInfo.json -Cluster Cluster0 -Name *hostgr*</Cmd>
+          <Description>Imports the rules/groups whose name is like "*hostgr*" and whose cluster property is Cluster0.  The -Cluster and -Name parameters are used here to narrow the scope of the DRS items that are imported.  In this example, that was only one (1) item:  a DRS VMHost group.</Description>
+          <Output>Name               Cluster         UserCreated        VMHost
+----               -------         -----------        ------
+faveVMHostGroup    Cluster0        True               {megahost0,megahost1}</Output>
+        </Example>
+        <Example>
+          <Name>Example 3</Name>
+          <Cmd>Import-DrsRule -Path \\fileserver.dom.com\share\myDrsRuleInfo.json -Cluster Cluster0 -Name *hostgrp0*</Cmd>
+          <Description>Just get the informational objects with name like "*hostgrp0*" from the JSON file, with no further action.  The cmdlet returns the informational objects whose details were retrieved from the given JSON file; no rule/group creation is attempted.</Description>
+          <Output>Name        : hostGrp0
+Cluster     : Cluster0
+VMHost      : esxi02,esxi03
+VMHostId    : {HostSystem-host-621,HostSystem-host-693}
+UserCreated : False
+Type        : ClusterHostGroup
+
+Name        : TestVMHostGrp0
+Cluster     : Cluster0
+VMHost      : esxi14,esxi15,esxi16
+VMHostId    : {HostSystem-host-721,HostSystem-host-725,HostSystem-host-729}
+UserCreated : True
+Type        : ClusterHostGroup</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Export-DrsRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="New" noun="DrsVMGroup">
+      <Name>New-DrsVMGroup</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet creates a new DRS VM group.</Synopsis>
+        <Description>This cmdlet creates a new DRS VM group with the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMGroup]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the new DRS VM group</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster VM Force Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>New-DrsVMGroup [-Name] &lt;String&gt; [-Cluster] &lt;PSObject[]&gt; [-VM] &lt;PSObject[]&gt; [-Force] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of DRS VM Group to create</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster in which to create new group</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="2" globbing="false">
+          <Name>VM</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>VMs to place in new group.
+The VMs can be specified as strings (their names) or as VirtualMachine objects</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Force</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch to specify to "overwrite" existing group of said name in target cluster ($true), or to not create group if conflict/already existing ($false or not specified).  If $false and conflict, error thrown for each conflicting group.
+"Overwrite" is accomplished by 0) removal of original group, 1) creation of new group with same name</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>New-DrsVMGroup -Name 'My VM Group' -Cluster Cluster1 -VM VM1,VM2</Cmd>
+          <Description>This will create a new DRS VM group with the name 'My VM Group' on Cluster1.
+The DRS VM group will contain the VMs VM1 and VM2.</Description>
+          <Output>Name               Cluster         UserCreated        VM
+----               -------         -----------        --
+My VM Group        Cluster1        False              {VM1,VM2}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="New" noun="DrsVMHostGroup">
+      <Name>New-DrsVMHostGroup</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet creates a new DRS VMHost group.</Synopsis>
+        <Description>This cmdlet creates a new DRS VMHost group with the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMHostGroup]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the new DRS VMHost group</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster VMHost Force Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>New-DrsVMHostGroup [-Name] &lt;String&gt; [-Cluster] &lt;PSObject[]&gt; [-VMHost] &lt;PSObject[]&gt; [-Force] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of DRS VMHost Group to create</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster in which to create new group</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="2" globbing="false">
+          <Name>VMHost</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The VMHosts that shall be in the new DRS VMHostgroup.
+The VMHosts can be given as strings (their names) or as VMHost objects</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Force</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch to specify to "overwrite" existing group of said name in target cluster ($true), or to not create group if conflict/already existing ($false or not specified).  If $false and conflict, error thrown for each conflicting group.
+"Overwrite" is accomplished by 0) removal of original group, 1) creation of new group with same name</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>New-DrsVMHostGroup -Name 'My ESX' -Cluster Cluster1 -VMHost esx1,esx2</Cmd>
+          <Description>This will create a new DRS VMHost group with the name 'My ESX' on Cluster1.
+The DRS VMHost group will contain the VMHosts esx1 and esx2.</Description>
+          <Output>Name               Cluster         UserCreated        VM
+----               -------         -----------        --
+My ESX             Cluster1        True               {esx1,esx2}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="New" noun="DrsVMToVMHostRule">
+      <Name>New-DrsVMToVMHostRule</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet creates a new DRS VM to VMHost rule.</Synopsis>
+        <Description>This cmdlet creates a new DRS VM to VMHost rule with the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMToVMHostRule]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the new DRS VM to VMHost rule</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Enabled Mandatory VMGroupName AffineHostGroupName AntiAffineHostGroupName Force Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>New-DrsVMToVMHostRule [-Name] &lt;String&gt; [[-Cluster] &lt;PSObject[]&gt;] [-Enabled] [-Mandatory] -VMGroupName &lt;String&gt; [-AffineHostGroupName &lt;String&gt;] [-AntiAffineHostGroupName &lt;String&gt;] [-Force] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of the new DRS VM to VMHost rule to create</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster in which to create the new DRS VM to VMHost rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>Enabled</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A switch indicating if the new DRS VM to VMHost rule shall be enabled</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>Mandatory</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch to specify if the new DRS VM to VMHost rule is a "should" ($false or not specified) or a "must" ($true) rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>VMGroupName</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>DRS VM Group to use for new VM-to-VMHost rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>AffineHostGroupName</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>DRS VMHost Group to use for VM Group to VMHost Group affinity ("run on")</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="String" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>AntiAffineHostGroupName</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>DRS VMHost Group to use for VM Group to VMHost Group antiaffinity ("not run on")</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Force</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch to specify to "overwrite" existing rule of said name in target cluster ($true) if it exists, or to not create rule if conflict/already existing in cluster ($false or not specified).  If $false and conflict, error thrown for each conflicting rule.
+"Overwrite" is accomplished by 0) removal of original rule, 1) creation of new rule with same name</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>New-DrsVMtoVMHostRule -Name testVmToVMHostRule0 -Cluster Cluster0 -Enabled -Mandatory -VMGroupName testVmGrp0 -AffineHostGroupName VMHostGrp0</Cmd>
+          <Description>Creates a new DRS VM to VMHost rule in Cluster0. The new rule is enabled, and is a "must run on" rule.  It involves the VMs in DRS VM group testVmGrp0 and the VMHosts in DRS VMHost group VMHostGrp0.</Description>
+          <Output>Name                     Cluster          Enabled    Mandatory    VMGroupName
+----                     -------          -------    ---------    -----------
+testVmToVMHostRule0      Cluster0         True       True         testVmGrp0</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>New-DrsVMtoVMHostRule -Name testVmToHostRule1 -Cluster Cluster0 -VMGroupName vmGrp1 -AntiAffineHostGroupName VMHostGrp1</Cmd>
+          <Description>Creates a new DRS VM to VMHost rule in Cluster0. The new rule is disabled, and is a "should not run on" rule.  It involves the VMs in DRS VM group vmGrp1 and the VMHosts in DRS VMHost group VMHostGrp1.</Description>
+          <Output>Name                     Cluster          Enabled    Mandatory    VMGroupName
+----                     -------          -------    ---------    -----------
+testVmToHostRule1        Cluster0         False      False        vmGrp1</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="New" noun="DrsVMToVMRule">
+      <Name>New-DrsVMToVMRule</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet creates a new DRS VM to VM rule.</Synopsis>
+        <Description>This cmdlet creates a new DRS VM to VM rule with the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMToVMRule]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the new DRS VM to VM rule</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Enabled Mandatory KeepTogether VM Force Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>New-DrsVMToVMRule [-Name] &lt;String&gt; [[-Cluster] &lt;PSObject[]&gt;] [-Enabled] [-Mandatory] [-KeepTogether] [-VM &lt;PSObject[]&gt;] [-Force] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of new DRS VM to VM rule to create</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster in which to create the new DRS VM to VM rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>Enabled</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A switch indicating if the new DRS VM to VM rule shall be enabled</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>Mandatory</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch to specify if the new DRS VM to VM rule is a "should" ($false or not specified) or a "must" ($true) rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>KeepTogether</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch that indicates if the new DRS VM to VM rule is an "affinity" ($true) or "anti-affinity" ($false or not specified) VM to VM rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="false" pos="named" globbing="false">
+          <Name>VM</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The VMs that shall be in the new DRS VM to VM rule.
+The VMs can be specified as strings (their names) or as VirtualMachine objects</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Force</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch to specify to "overwrite" existing rule of said name in target cluster ($true) if it exists, or to not create rule if conflict/already existing in cluster ($false or not specified).  If $false and conflict, error thrown for each conflicting rule.
+"Overwrite" is accomplished by 0) removal of original rule, 1) creation of new rule with same name</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>New-DrsVMToVMRule -Name MyRule -Cluster Cluster1 -Enabled -Mandatory -KeepTogether:$false -VM VM1,VM2</Cmd>
+          <Description>This will create a new DRS VM to VM rule for the VM1 and VM2.
+The rule will be enabled.
+The rule expresses an obligation ("shall" or "must").
+The rule will be an anti-affinity rule.</Description>
+          <Output>Name         Cluster         Enabled     KeepTogether  Mandatory   VM
+----         -------         -------     ------------  ---------   --
+MyRule       Cluster1        True        False         True        {VM1,VM2}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Remove" noun="DrsVMGroup">
+      <Name>Remove-DrsVMGroup</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet removes a DRS VM group.</Synopsis>
+        <Description>This cmdlet removes a DRS VM group that fits the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Remove-DrsVMGroup [-Name] &lt;String&gt; [-Cluster] &lt;PSObject[]&gt; [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of DRS VM Group to remove</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster from which to remove the DRS VM group</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Remove-DrsVMGroup -Name My* -Cluster Cluster1</Cmd>
+          <Description>This example will remove all DRS VM groups on Cluster1, whose name starts with 'My'
+
+To suppress confirmation, pass "-Confirm:$false" to the Remove-DrsVMGroup cmdlet.</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-DrsVMGroup testGrpToKill | Remove-DrsVMGroup</Cmd>
+          <Description>Gets DRS VM group "testGrpToKill" from all clusters, and removes said groups. Prompts for confirmation due to the impact level.  Upon answering "Y", the groups are removed.
+
+To suppress confirmation, pass "-Confirm:$false" to the Remove-DrsVMGroup cmdlet.</Description>
+          <Output>
+Confirm
+Are you sure you want to perform this action?
+Performing the operation "Remove DRS VM group 'testGrpToKill'" on target "Cluster0".
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"): Y</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>New-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Remove" noun="DrsVMHostGroup">
+      <Name>Remove-DrsVMHostGroup</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet removes a DRS VMHost group.</Synopsis>
+        <Description>This cmdlet removes a DRS VMHost group that fits the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Remove-DrsVMHostGroup [-Name] &lt;String&gt; [-Cluster] &lt;PSObject[]&gt; [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of DRS VMHost group to remove</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster from which to remove the DRS VMHost group</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Remove-DrsVMHostGroup -Name 'All ESXi' -Cluster Cluster1</Cmd>
+          <Description>This example will remove the DRS VMHost groups on Cluster1, whose name is exactly 'All ESXi'</Description>
+          <Output />
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>New-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Remove" noun="DrsVMToVMHostRule">
+      <Name>Remove-DrsVMToVMHostRule</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet removes a DRS VM to VMHost rule.</Synopsis>
+        <Description>This cmdlet removes DRS VM to VMHost rules that fit the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Remove-DrsVMToVMHostRule [-Name] &lt;String&gt; [[-Cluster] &lt;PSObject[]&gt;] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of the DRS VM to VMHost rule to remove</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster from which to remove the DRS VM to VMHost rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Remove-DrsVMToVMHostRule -Name Rule1 -Cluster Cluster1</Cmd>
+          <Description>This example will remove the DRS VM to VMHost rule, on cluster Cluster1, whose name is exactly 'Rule1'</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-DrsVMToVMHostRule testVmToHostRule1 | Remove-DrsVMToVMHostRule</Cmd>
+          <Description>Gets DRS VM to Host rules "testVmToHostRule1" from all clusters, and removes said rules. Prompts for confirmation due to the impact level.  Upon answering "Y", the rules are removed.
+
+To suppress confirmation, pass "-Confirm:$false" to the Remove-DrsVMToVMHostRule cmdlet.</Description>
+          <Output>
+Confirm
+Are you sure you want to perform this action?
+Performing the operation "Remove DRS rule 'testVmToHostRule1'" on target "Cluster0".
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"): Y</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>New-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Remove" noun="DrsVMToVMRule">
+      <Name>Remove-DrsVMToVMRule</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet removes a DRS VM to VM rule.</Synopsis>
+        <Description>This cmdlet removes DRS VM to VM rules that fit the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType />
+        <ReturnUrl />
+        <ReturnTypeDescription />
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Remove-DrsVMToVMRule [-Name] &lt;String&gt; [[-Cluster] &lt;PSObject[]&gt;] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Name of the DRS VM to VM rule to remove</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster from which to remove the DRS VM to VM rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Remove-DrsVMToVMRule -Name MyRule</Cmd>
+          <Description>This example will remove the DRS VM to VM rules, whose name is 'MyRule', and this on all clusters</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-DrsVMToVMRule testVmToVmRule1 | Remove-DrsVMToVMRule</Cmd>
+          <Description>Gets DRS VM to VM rules "testVmToVmRule1" from all clusters, and removes said rules. Prompts for confirmation due to the impact level.  Upon answering "Y", the rules are removed.
+
+To suppress confirmation, pass "-Confirm:$false" to the Remove-DrsVMToVMRule cmdlet.</Description>
+          <Output>
+Confirm
+Are you sure you want to perform this action?
+Performing the operation "Remove DRS rule 'testVmToVmRule1'" on target "Cluster0".
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"): Y</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>New-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Set-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Set" noun="DrsVMGroup">
+      <Name>Set-DrsVMGroup</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet changes a DRS VM group.</Synopsis>
+        <Description>This cmdlet changes settings of the DRS VM group with the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMGroup]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the updated DRS VM group</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster VM Append Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Set-DrsVMGroup [-Name] &lt;String&gt; [-Cluster] &lt;PSObject[]&gt; [-VM &lt;PSObject[]&gt;] [-Append] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The name of the DRS VM group to modify</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster in which the DRS VM group resides</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="true" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>VM</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The VM that shall be in the DRS VM group.
+The VMs can be specified as strings (their names) or as VirtualMachine objects</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Append</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch: append the given VM(s) as members of the DRS VM group ($true), or set them as the only members of the group ($false or not specified)?</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-DrsVMGroup -Name 'VM Group 1' -Append -VM vm3 -Cluster Cluster1</Cmd>
+          <Description>The example will add Virtual Machine VM3 to DRS VM group, whose name is 'VM Group 1', on Cluster1</Description>
+          <Output>Name               Cluster         UserCreated        VM
+----               -------         -----------        --
+VM Group 1         Cluster1        False              {VM1,VM2,VM3}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>New-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Set" noun="DrsVMHostGroup">
+      <Name>Set-DrsVMHostGroup</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet changes a DRS VMHost group.</Synopsis>
+        <Description>This cmdlet changes settings of the DRS VMHost group with the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMHostGroup]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the updated DRS VMHost group</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster VMHost Append Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Set-DrsVMHostGroup [-Name] &lt;String&gt; [-Cluster] &lt;PSObject[]&gt; [-VMHost &lt;PSObject[]&gt;] [-Append] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The name of the DRS VMHost group to modify</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster in which the DRS VMHost group resides</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>VMHost</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The VMHost that shall be in the DRS VMHost group.
+The names of the VMHost can be given as strings or as VMHost objects.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Append</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch: append the given VMHosts(s) as members of the DRS VM group ($true), or set them as the only members of the group ($false or not specified)?</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-DrsVMHostGroup -Name 'My ESX' -Append -VMHost esx3 -Cluster Cluster1</Cmd>
+          <Description>The example will add VMHost esx3 to DRS VMHost group, whose name is 'My ESX', on Cluster1</Description>
+          <Output>Name               Cluster         UserCreated        VM
+----               -------         -----------        --
+My ESX             Cluster1        True               {esx1,esx2,esx3}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>New-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMHostGroup</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Set" noun="DrsVMToVMHostRule">
+      <Name>Set-DrsVMToVMHostRule</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet changes a DRS VM to VMHost rule.</Synopsis>
+        <Description>This cmdlet changes a DRS VM to VMHost rule with the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMToVMHostRule]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the updated DRS VM to VMHost rule</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Enabled VMGroup VMHostGroup Mandatory KeepTogether Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Set-DrsVMToVMHostRule [-Name] &lt;String&gt; [[-Cluster] &lt;PSObject[]&gt;] [-Enabled] [-VMGroup &lt;PSObject&gt;] [-VMHostGroup &lt;PSObject&gt;] [-Mandatory] [-KeepTogether] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The name of the DRS VM to VMHost rule to modify</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Cluster in which DRS VM to VMHost rule resides</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Enabled</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A switch indicating if the DRS VM to VMHost rule shall be enabled</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>VMGroup</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The name of the new DRS VM group to use for this rule. This will replace the current DRS VM group in the rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>VMHostGroup</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The name of the new DRS VMHost group to use for this rule.  This will replace the current DRS VMHost group in the rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Mandatory</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A switch the allows to specify if the DRS VM to VMHost rule is to be changed to a "should" ($false or not specified) or a "must" ($true) rule.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>KeepTogether</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch: Make this a "run on" rule. If $false (or not specified), this will be a "not run on" rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-DrsVMToVMHostRule -Name Rule1 -VMGroup 'My VM' -Cluster Cluster1</Cmd>
+          <Description>This example changes the DRS VM to VMHost rules, whose name is 'Rule1', on Cluster1. The DRS VM group used in the rule will now be the DRS VM group named 'My VM'</Description>
+          <Output />
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-Cluster Cluster0 | Get-DrsVMToVMHostRule testVmToHostRule0 | Set-DrsVMToVMHostRule -Enabled -KeepTogether:$false | Format-List *</Cmd>
+          <Description>Gets the given cluster and then the DRS VM to VMHost rule "testVmToHostRule0" therein, and then:
+    enables the rule
+    sets it as an anti-affinity rule, keeping the VMs in the DRS VM group off of the VMHosts in the DRS VMHost group</Description>
+          <Output>Name                    : testVmToHostRule0
+Cluster                 : Cluster0
+ClusterId               : ClusterComputeResource-domain-c266
+Enabled                 : True
+Mandatory               : True
+VMGroupName             : VmGrp0
+AffineHostGroupName     :
+AntiAffineHostGroupName : VMHostGrp0
+UserCreated             : True
+Type                    : ClusterVmHostRuleInfo</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>New-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMToVMHostRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+    <CmdletObject verb="Set" noun="DrsVMToVMRule">
+      <Name>Set-DrsVMToVMRule</Name>
+      <GeneralHelp>
+        <Synopsis>This cmdlet changes a DRS VM to VM rule.</Synopsis>
+        <Description>This cmdlet changes a DRS VM to VM rule with the provided parameters.</Description>
+        <Notes />
+        <InputType />
+        <InputUrl />
+        <InputTypeDescription />
+        <ReturnType>[DRSRule.VMToVMRule]</ReturnType>
+        <ReturnUrl />
+        <ReturnTypeDescription>Object with information about the updated DRS VM to VM rule</ReturnTypeDescription>
+      </GeneralHelp>
+      <ParamSets>
+        <CommandParameterSetInfo2 Name="__AllParameterSets" Params="Name Cluster Enabled Mandatory KeepTogether VM Append Verbose Debug ErrorAction WarningAction ErrorVariable WarningVariable OutVariable OutBuffer PipelineVariable WhatIf Confirm" />
+      </ParamSets>
+      <Syntax>
+        <string>Set-DrsVMToVMRule [-Name] &lt;String&gt; [[-Cluster] &lt;PSObject[]&gt;] [-Enabled] [-Mandatory] [-KeepTogether] [-VM &lt;PSObject[]&gt;] [-Append] [-WhatIf] [-Confirm]</string>
+      </Syntax>
+      <Parameters>
+        <ParameterDescription type="String" varLen="false" required="true" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="0" globbing="false">
+          <Name>Name</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The name of the DRS VM to VM rule to modify</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="true" isPos="true" pos="1" globbing="false">
+          <Name>Cluster</Name>
+          <Attributes>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+            <string>System.Management.Automation.ValidateScriptAttribute</string>
+            <string>System.Management.Automation.ValidateNotNullOrEmptyAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The cluster in which the DRS VM to VM rule resides</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Enabled</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A switch indicating if the DRS VM to VM rule shall be enabled</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Mandatory</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A switch the allows to specify if the DRS VM to VM is to be changed to a "should" ($false or not specified) or a "must" ($true) rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>KeepTogether</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>Switch that indicates if the new DRS VM to VM rule is an "affinity" ($true) or "anti-affinity" ($false or not specified) VM to VM rule</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="PSObject[]" varLen="true" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>VM</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>The VM that shall be in the DRS VM to VM rule.
+The VMs can be specified as strings (their names) or as VirtualMachine objects</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Append</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.ArgumentTypeConverterAttribute</string>
+          </Attributes>
+          <Aliases />
+          <Description>A switch indicating if the Virtual Machines specified on the VM parameter shall replace the current VM in the DRS VM to VM rule ($false or not specified), or if they shall be appended to the current VM in the DRS VM to VM rule ($true)</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>WhatIf</Name>
+          <Attributes>
+            <string>System.Management.Automation.ParameterAttribute</string>
+            <string>System.Management.Automation.AliasAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>wi</string>
+          </Aliases>
+          <Description>Indicates that the cmdlet is run only to display the changes that would be made, and no objects are actually modified</Description>
+          <DefaultValue />
+        </ParameterDescription>
+        <ParameterDescription type="SwitchParameter" varLen="false" required="false" dynamic="false" pipeRemaining="false" pipe="false" pipeProp="false" isPos="false" pos="named" globbing="false">
+          <Name>Confirm</Name>
+          <Attributes>
+            <string>System.Management.Automation.AliasAttribute</string>
+            <string>System.Management.Automation.ParameterAttribute</string>
+          </Attributes>
+          <Aliases>
+            <string>cf</string>
+          </Aliases>
+          <Description>If the value is $true, indicates that the cmdlet asks for confirmation before running.
+If the value is $false, the cmdlet runs without asking for user confirmation.</Description>
+          <DefaultValue />
+        </ParameterDescription>
+      </Parameters>
+      <Examples>
+        <Example>
+          <Name>Example 1</Name>
+          <Cmd>Set-DrsVMToVMRule -Name 'My Rule' -Enabled:$false -Cluster Cluster1</Cmd>
+          <Description>This example disabled the VM to VM rule, whose name is 'My Rule', on Cluster1</Description>
+          <Output>Name         Cluster         Enabled     KeepTogether  Mandatory   VM
+----         -------         -------     ------------  ---------   --
+MyRule       Cluster1        False       False         True        {VM1,VM2}</Output>
+        </Example>
+        <Example>
+          <Name>Example 2</Name>
+          <Cmd>Get-Cluster Cluster0 | Get-DrsVMToVMRule testVmToVmRule0 | Set-DrsVMtoVMRule -Mandatory:$false -KeepTogether -VM VM2 -Append</Cmd>
+          <Description>Gets the given cluster and then the DRS VM to VM rule "testVmToVmRule0 " therein, and then:
+    makes the rule a "should" instead of a "must" rule
+    sets it as an affinity rule, keeping the VMs in the DRS VM group together as feasible
+    appends VM "VM2" to the list of VMs to which the rule pertains</Description>
+          <Output>Name                     Cluster          Enabled    KeepTogether    Mandatory    VM
+----                     -------          -------    ------------    ---------    --
+testVmToVmRule0          Cluster0         True       True            False        {VM0, VM1, VM2}</Output>
+        </Example>
+      </Examples>
+      <RelatedLinks>
+        <RelatedLink>
+          <LinkText>Get-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>New-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+        <RelatedLink>
+          <LinkText>Remove-DrsVMToVMRule</LinkText>
+          <LinkUrl />
+        </RelatedLink>
+      </RelatedLinks>
+      <SupportInformation ad="false" rsat="false" ps2="false" ps3="false" ps4="false" ps5="false" wxp="false" wv="false" w7="false" w8="false" w81="false" w2k3s="false" w2k3e="false" w2k3d="false" w2k8s="false" w2k8e="false" w2k8d="false" w2k8r2s="false" w2k8r2e="false" w2k8r2d="false" w2k12s="false" w2k12d="false" w2k12r2s="false" w2k12r2d="false" />
+      <Publish>false</Publish>
+    </CmdletObject>
+  </Cmdlets>
+</ModuleObject>
