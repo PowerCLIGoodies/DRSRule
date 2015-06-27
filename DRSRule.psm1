@@ -82,6 +82,10 @@ Function Get-DrsVMHostGroup
                             {
                               Get-View $_.Host -Property Name | Select-Object -ExpandProperty Name
                             }
+                            else
+                            {
+                              $null
+                            }
                           )
             VMHostId    = $_.Host
             UserCreated = [Boolean]$_.UserCreated
