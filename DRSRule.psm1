@@ -31,10 +31,8 @@ Function Get-DrsVMGroup
             ## updated to use $oThisCluster, instead of $Cluster, which would get all cluster names if more than one cluster
             Cluster     = $oThisCluster.Name
             VM          = $(
-                            if($_.Vm)
-                            {
-                              Get-View $_.Vm -Property Name | Select-Object -ExpandProperty Name
-                            }
+                            if($_.Vm) {Get-View $_.Vm -Property Name | Select-Object -ExpandProperty Name}
+                            else {$null}
                           )
             VMId        = $_.Vm
             UserCreated = [Boolean]$_.UserCreated
@@ -78,10 +76,8 @@ Function Get-DrsVMHostGroup
             Name        = $_.Name
             Cluster     = $oThisCluster.Name
             VMHost      = $(
-                            if($_.Host)
-                            {
-                              Get-View $_.Host -Property Name | Select-Object -ExpandProperty Name
-                            }
+                            if($_.Host) {Get-View $_.Host -Property Name | Select-Object -ExpandProperty Name}
+                            else {$null}
                           )
             VMHostId    = $_.Host
             UserCreated = [Boolean]$_.UserCreated
@@ -127,10 +123,8 @@ Function Get-DrsVMToVMRule
             Enabled      = [Boolean]$_.Enabled
             KeepTogether = $($_ -is [VMware.Vim.ClusterAffinityRuleSpec])
             VM           = $(
-                          if($_.VM)
-                          {
-                            Get-View $_.VM -Property Name | Select-Object -ExpandProperty Name
-                          }
+                          if($_.VM) {Get-View $_.VM -Property Name | Select-Object -ExpandProperty Name}
+                          else {$null}
                         )
             VMId        = $_.VM
             UserCreated = [Boolean]$_.UserCreated
