@@ -1,4 +1,9 @@
-﻿$pcliDll = "${env:\ProgramFiles(x86)}\VMware\Infrastructure\vSphere PowerCLI\VMware.Vim.dll"
+﻿if((Get-PowerCLIVersion).Build -ge 4624819){
+    $pcliDll = "${env:\ProgramFiles(x86)}\VMware\Infrastructure\PowerCLI\Modules\VMware.VimAutomation.Core\VMware.Vim.dll"
+}
+else{
+    $pcliDll = "${env:\ProgramFiles(x86)}\VMware\Infrastructure\vSphere PowerCLI\VMware.Vim.dll"
+}
 
 Add-Type -ReferencedAssemblies $pcliDll -TypeDefinition @"
   using VMware.Vim;
