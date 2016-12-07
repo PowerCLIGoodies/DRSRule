@@ -12,7 +12,7 @@
 RootModule = 'DRSRule.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.1'
+ModuleVersion = '1.0.3'
 
 # ID used to uniquely identify this module
 GUID = 'f7edec59-261e-43e3-818c-6d92653ff05c'
