@@ -1,12 +1,13 @@
-testing items (ones prefixed with "--" are failing tests, ones with "??" have not been tested):
+## testing items; commented out ones have been covered by "real" tests, now (Pester tests)
 $strCluster = "oc*"
-Get-DrsVMGroup
-Get-Cluster $strCluster | Get-DrsVMGroup
-Get-DrsVMGroup -ReturnRawGroup
 
-Get-DrsVMHostGroup
-Get-Cluster $strCluster | Get-DrsVMHostGroup
-Get-DrsVMHostGroup -ReturnRawGroup
+# Get-DrsVMGroup
+# Get-Cluster $strCluster | Get-DrsVMGroup
+# Get-DrsVMGroup -ReturnRawGroup
+
+# Get-DrsVMHostGroup
+# Get-Cluster $strCluster | Get-DrsVMHostGroup
+# Get-DrsVMHostGroup -ReturnRawGroup
 
 Get-DrsVMtoVMRule
 Get-Cluster $strCluster | Get-DrsVMtoVMRule
@@ -16,7 +17,6 @@ Get-Cluster $strCluster | Get-DrsVMtoVMHostRule
 
 New-DrsVMGroup -Name VmGrp0 -Cluster $strCluster -VM VM0,VM1,VM2
 New-DrsVMGroup -Name VmGrp1 -Cluster $strCluster -VM VM10,VM11,VM12
---Get-Cluster $strCluster | Get-VM VM0,VM1,VM2 | New-DrsVMGroup -Name VmGrp2 ## not taking from pipeline
 New-DrsVMGroup -Name VmGrpNew -Cluster $strCluster -VM VM10,VM11,fakeVMName ## should throw error -- no such VM
 Set-DrsVMGroup -Name nonexistentVMGroup -Cluster $strCluster -VM VM10,VM11 ## should throw error -- no such VMGroup
 Set-DrsVMGroup -Name VmGrp0 -Cluster $strCluster -VM VM1[01] ## removing one VM
@@ -24,13 +24,9 @@ Set-DrsVMGroup -Name VmGrp0 -Cluster $strCluster -VM VM12 -Append ## adding back
 Set-DrsVMGroup -Name VmGrp0 -Cluster (Get-Cluster $strCluster) -VM VM10,VM11 ## cluster by object, remove a VM from group
 Set-DrsVMGroup -Name VmGrp0 -Cluster $strCluster -VM (Get-VM VM1[23]) ## VM by object
 Set-DrsVMGroup -Name VmGrp0 -Cluster $strCluster -VM fakeVMName -Append ## should throw error -- no such VM
-## not sure will work as-is:  seems like it will set group twice, once for each VM in pipeline, resulting in group with only last VM in pipeline; may need to move ReconfigureComputeResource() to end{} scriptblock
-??Get-Cluster $strCluster | Get-VM VM0,VM1 | Set-DrsVMGroup -Name VmGrp0 -Cluster $strCluster -WhatIf
 Set-DrsVMGroup -Name VmGrp0 -Cluster (Get-Cluster $strCluster) -VM (Get-VM VM10,VM11) -Append
 Remove-DrsVMGroup -Name VmGrp0 -Cluster $strCluster
---Remove-DrsVMGroup -Name fakeGroupName -Cluster $strCluster ## should throw error -- no such group; doesn't throw error
 Get-DrsVMGroup VmGrp0 -Cluster $strCluster | Remove-DrsVMGroup
---Remove-DrsVMGroup -Name VmGrp0 -Cluster (Get-Cluster $strCluster)  ## problem:  if group VmGrp0 does not exist, should error to that effect; currently continues as if actually removing such a group
 
 New-DrsVMhostGroup -Name VMHostGrp0 -Cluster $strCluster -VMHost *
 New-DrsVMhostGroup -Name VMHostGrp0 -Cluster $strCluster -VMHost * ## should throw error -- dupe group name
@@ -43,8 +39,6 @@ Set-DrsVMhostGroup -Name VMHostGrp0 -Cluster $strCluster -VMHost fakeVMHostName 
 Get-DrsVMHostGroup -Cluster $strCluster | Set-DrsVMHostGroup -VMHost dev0d,dev0y ## should throw error -- invalid VMHost name
 Remove-DrsVMhostGroup -Name VMHostGrp0 -Cluster $strCluster
 Get-DrsVMHostGroup -Cluster $strCluster | Remove-DrsVMhostGroup
---Remove-DrsVMhostGroup -Name VMHostGrp0 -Cluster (Get-Cluster $strCluster)  ## problem:  if group VmGrp0 does not exist, should error to that effect; currently continues as if actually removing such a group
---Remove-DrsVMhostGroup -Name fakeGroupname -Cluster $strCluster ## should throw error -- invalid group name; doesn't throw error
 
 New-DrsVMtoVMHostRule -Name VmToHostRule0 -Cluster $strCluster -Enabled -Mandatory -VMGroupName VmGrp0 -AffineHostGroupName VMHostGrp0 -WhatIf
 New-DrsVMtoVMHostRule -Name VmToHostRule0 -Cluster $strCluster -Enabled -Mandatory -VMGroupName VmGrp0 -AffineHostGroupName VMHostGrp0 ## should throw error -- dupe rule name
@@ -59,9 +53,7 @@ Set-DrsVMtoVMHostRule -Name VmToHostRule0 -Cluster $strCluster -VMGroup fakeGrou
 Set-DrsVMtoVMHostRule -Name VmToHostRule0 -Cluster $strCluster -VMHostGroup fakeGroupName ## should throw error -- invalid VMHostgroup name
 Get-Cluster $strCluster | Get-DrsVMToVMHostRule VmToHostRule0 | Set-DrsVMtoVMHostRule -Mandatory | fl *
 Remove-DrsVMtoVMHostRule -Cluster $strCluster -Name VmToHostRule0
---Remove-DrsVMtoVMHostRule -Cluster $strCluster -Name VmToHostRule0   ## should throw error on 2nd run -- invalid rule name, as it was already removed; doesn't throw error
 Get-Cluster $strCluster | Get-DrsVMtoVMHostRule -Name VmToHostRule0 | Remove-DrsVMtoVMHostRule
---Remove-DrsVMtoVMHostRule -Cluster (Get-Cluster $strCluster) -Name nonExistentRuleName -Verbose ## should throw error -- no such rule; does not
 
 New-DrsVMtoVMRule -Name VmToVmRule0 -Cluster $strCluster -Enabled -KeepTogether -VM VM10,VM11
 New-DrsVMtoVMRule -Name VmToVmRule0 -Cluster $strCluster -Enabled -KeepTogether -VM VM10,VM11 ## should throw error -- dupe rule name
@@ -71,7 +63,6 @@ Set-DrsVMtoVMRule -Name VmToVmRule0 -Cluster $strCluster -VM VM13 -Append
 Set-DrsVMtoVMRule -Name VmToVmRule0 -Cluster $strCluster -Enabled -KeepTogether:$false -VM fakeVMName ## should throw error -- invalid VM name
 Set-DrsVMtoVMRule -Name fakeRuleName -Cluster $strCluster -Enabled ## should throw error -- invalid rule name
 Get-Cluster $strCluster | Get-DrsVMToVMRule VMToVmRule0 | Set-DrsVMtoVMRule -Mandatory:$false -KeepTogether -VM VM1[12]
---Remove-DrsVMToVMRule fakeRuleName ## should throw error -- invalid rule name; does not
 Get-Cluster $strCluster | Get-DrsVMToVMRule VMToVmRule0 | Remove-DrsVMToVMRule
 
 Export-DrsRule -Path c:\rules.json
@@ -82,3 +73,26 @@ Import-DrsRule c:\rules.json -Force ## should prompt for removing existing rules
 Import-DrsRule c:\rules.json -Force -Confirm:$false ## should just do it
 Import-DrsRule -Cluster $strCluster -Path c:\temp\drsInfo_NewCluster10.json
 Import-DrsRule -Path c:\temp\drsInfo_NewCluster10.json -Name hostGrp0 -Force
+
+
+<# other tests
+Get-Cluster $strCluster | Get-VM VM0,VM1,VM2 | New-DrsVMGroup -Name VmGrp2 ## not taking from pipeline
+
+## not sure will work as-is:  seems like it will set group twice, once for each VM in pipeline, resulting in group with only last VM in pipeline; may need to move ReconfigureComputeResource() to end{} scriptblock
+Get-Cluster $strCluster | Get-VM VM0,VM1 | Set-DrsVMGroup -Name VmGrp0 -Cluster $strCluster -WhatIf
+
+Remove-DrsVMGroup -Name fakeGroupName -Cluster $strCluster ## should throw error -- no such group; doesn't throw error
+
+Remove-DrsVMGroup -Name VmGrp0 -Cluster (Get-Cluster $strCluster)  ## problem:  if group VmGrp0 does not exist, should error to that effect; currently continues as if actually removing such a group
+
+Remove-DrsVMhostGroup -Name VMHostGrp0 -Cluster (Get-Cluster $strCluster)  ## problem:  if group VmGrp0 does not exist, should error to that effect; currently continues as if actually removing such a group
+
+Remove-DrsVMhostGroup -Name fakeGroupname -Cluster $strCluster ## should throw error -- invalid group name; doesn't throw error
+
+Remove-DrsVMtoVMHostRule -Cluster $strCluster -Name VmToHostRule0   ## should throw error on 2nd run -- invalid rule name, as it was already removed; doesn't throw error
+
+Remove-DrsVMtoVMHostRule -Cluster (Get-Cluster $strCluster) -Name nonExistentRuleName -Verbose ## should throw error -- no such rule; does not
+
+Remove-DrsVMToVMRule fakeRuleName ## should throw error -- invalid rule name; does not
+
+#>

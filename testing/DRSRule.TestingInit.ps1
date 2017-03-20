@@ -24,5 +24,7 @@ Write-Verbose -Verbose "Testing using VIServer of name '$($oVIServerConnectionTo
 
 
 ## get the cluster use for testing
-$oClusterToUse = Get-Cluster -Name $Cluster | Select-Object -First 1
-Write-Verbose -Verbose "Testing using cluster '$oClusterToUse'"
+$oTmpClusterToUse = Get-Cluster -Name $Cluster | Select-Object -First 1
+Write-Verbose -Verbose "Testing using cluster '$oTmpClusterToUse'"
+
+return $oTmpClusterToUse
