@@ -1,7 +1,6 @@
 ## functions that are used by the module, but not published for end-user consumption
 
-Function Get-DrsRuleObject
-{
+function Get-DrsRuleObject {
   <#  .Description
       Supporting function to get Rule object of given type
   #>
@@ -10,17 +9,14 @@ Function Get-DrsRuleObject
     [Parameter(ValueFromPipeline = $True)]
     [ValidateNotNullOrEmpty()]
     [PSObject[]]$Object,
+
     [String]$Type
   )
 
-  Process
-  {
-    $Object | where {$_.Type -match $Type}
-  }
+  process {$Object | Where-Object {$_.Type -match $Type}}
 }
 
-function Get-ClusterObjFromClusterParam
-{
+function Get-ClusterObjFromClusterParam {
 	<#	.Description
 		Function to get cluster object(s) from given PSObject (expecting string, ClusterImpl object, or $null). If $null, then gets all clusters in connected VIServers
 		.Outputs
@@ -31,7 +27,7 @@ function Get-ClusterObjFromClusterParam
 	)
 
   process {
-    if($null -eq $Cluster) {Get-Cluster}
+    if($null -eq $Cluster) {return (Get-Cluster)}
     else {
       $Cluster | Foreach-Object {
         if($_ -is [System.String]){
@@ -43,8 +39,7 @@ function Get-ClusterObjFromClusterParam
   }
 } ## end function
 
-function _Test-TypeOrString
-{
+function _Test-TypeOrString {
   <#  .Description
       Helper function to test if object is either of type String or $Type
       .Outputs
@@ -53,6 +48,7 @@ function _Test-TypeOrString
   param(
     ## Object to test
     [parameter(Mandatory=$true)][ValidateNotNullOrEmpty()][PSObject[]]$ObjectToTest,
+
     ## Type of object for which to check
     [parameter(Mandatory=$true)][Type]$Type
   )
