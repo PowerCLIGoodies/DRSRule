@@ -9,11 +9,11 @@ $strCluster = "oc*"
 # Get-Cluster $strCluster | Get-DrsVMHostGroup
 # Get-DrsVMHostGroup -ReturnRawGroup
 
-Get-DrsVMtoVMRule
-Get-Cluster $strCluster | Get-DrsVMtoVMRule
+# Get-DrsVMtoVMRule
+# Get-Cluster $strCluster | Get-DrsVMtoVMRule
 
-Get-DrsVMtoVMHostRule -Cluster dcluster[01]
-Get-Cluster $strCluster | Get-DrsVMtoVMHostRule
+# Get-DrsVMtoVMHostRule -Cluster dcluster[01]
+# Get-Cluster $strCluster | Get-DrsVMtoVMHostRule
 
 New-DrsVMGroup -Name VmGrp0 -Cluster $strCluster -VM VM0,VM1,VM2
 New-DrsVMGroup -Name VmGrp1 -Cluster $strCluster -VM VM10,VM11,VM12

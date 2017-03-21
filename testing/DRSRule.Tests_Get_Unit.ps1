@@ -19,14 +19,16 @@ $oClusterToUse = & $PSScriptRoot\DRSRule.TestingInit.ps1 -Cluster $Cluster
 $hshDrsruletypeToVMwareTypeInfo = @{
     VMGroup = "VMware.Vim.ClusterVmGroup"
     VMHostGroup = "VMware.Vim.ClusterHostGroup"
+    VMToVMRule = "VMware.Vim.ClusterAffinityRuleSpec", "VMware.Vim.ClusterAntiAffinityRuleSpec"
+    VMToVMHostRule = "VMware.Vim.ClusterVmHostRuleInfo"
 } ## end hsh
 
 
 ## for each of the object types whose typenames match the object name in the cmdlet noun, test getting such an object
-$arrObjectTypesToGet = Write-Output VMGroup, VMHostGroup
+$arrObjectTypesToGet = Write-Output VMGroup, VMHostGroup, VMtoVMRule, VMToVMHostRule
 $arrObjectTypesToGet | Foreach-Object {
     Describe -Tags "Get" -Name "Get-Drs$_" {
-        It "Gets a DRSRule $_ object (from any ol' cluster)" {
+        It "Gets a DRSRule $_ object" {
             $arrReturnTypes = if ($arrTmpObj = Invoke-Command -ScriptBlock {& "Get-Drs$_" | Select-Object -First 2}) {$arrTmpObj | Get-Member -ErrorAction:Stop | Select-Object -Unique -ExpandProperty TypeName} else {$null}
             New-Variable -Name "bGetsOnly${_}Type" -Value ($arrReturnTypes -eq "DRSRule.$_")
 
@@ -34,9 +36,10 @@ $arrObjectTypesToGet | Foreach-Object {
             (Get-Variable -ValueOnly -Name "bGetsOnly${_}Type") | Should Be $true
         }
 
-        It "Gets a 'raw' $($hshDrsruletypeToVMwareTypeInfo[$_]) object (from any ol' cluster), via -ReturnRawGroup" {
-            $arrReturnTypes = if ($arrTmpObj = Invoke-Command -ScriptBlock {& "Get-Drs$_" -ReturnRawGroup | Select-Object -First 2}) {$arrTmpObj | Get-Member -ErrorAction:Stop | Select-Object -Unique -ExpandProperty TypeName} else {$null}
-            New-Variable -Name "bGetsOnly${_}Type" -Value ($arrReturnTypes -eq $hshDrsruletypeToVMwareTypeInfo[$_])
+        It "Gets a 'raw' $($hshDrsruletypeToVMwareTypeInfo[$_] -join ' or ') object, via -ReturnRawGroup" {
+            ## should be only one type returned
+            $arrReturnTypes = if ($arrTmpObj = Invoke-Command -ScriptBlock {& "Get-Drs$_" -ReturnRaw | Select-Object -First 2}) {$arrTmpObj | Get-Member -ErrorAction:Stop | Select-Object -Unique -ExpandProperty TypeName} else {$null}
+            New-Variable -Name "bGetsOnly${_}Type" -Value ($hshDrsruletypeToVMwareTypeInfo[$_] -contains $arrReturnTypes)
 
             ## gets only the desired object type should be $true
             (Get-Variable -ValueOnly -Name "bGetsOnly${_}Type") | Should Be $true
