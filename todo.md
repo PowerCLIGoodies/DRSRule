@@ -1,6 +1,6 @@
 #### ToDo items for DRSRule module
-- add Pester tests
-	- `Get-Drs*` unit/integration tests
+- add [Pester](https://github.com/pester/Pester) tests
+	- `Get-Drs*` integration tests
 	- `New-Drs*`, `Set-Drs*`, `Remove-Drs*` tests
 - add SDRS rule support
 - add ability to specify prefix for names of new objects during Import
