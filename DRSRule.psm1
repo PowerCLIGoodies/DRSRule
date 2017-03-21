@@ -1,28 +1,90 @@
-#.ExternalHelp DRSRule.Help.xml
-Function Get-DrsVMGroup {
-  [CmdletBinding()]
+<#  .Description
+    This cmdlet retrieves the DRS VM groups. It returns DRS VM groups that correspond to the filter criteria provided by the cmdlet parameters.
+
+    The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.
+
+    .Synopsis
+    This cmdlet retrieves the DRS VM groups
+
+    .Example
+    Get-DrsVMGroup -Name '*VM Group 1*'
+    Name               Cluster         UserCreated        VM
+    ----               -------         -----------        --
+    VM Group 1         Cluster1        True               {VM1,VM2}
+    VM Group 12        Cluster1        True               {VM3}
+    New VM Group 100   Cluster2        True               {VM4,VM5,VM6}
+
+    Returns all DRS VM groups with name like '*VM Group 1*'
+
+    .Example
+    Get-DrsVMGroup -Cluster Cluster1 -Name 'VM Group 1'
+    Name               Cluster         UserCreated        VM
+    ----               -------         -----------        --
+    VM Group 1         Cluster1        True               {VM1,VM2}
+
+    The DRS VM group with the exact name 'VM Group 1' from Cluster1 will be returned
+
+    .Example
+    Get-Cluster Cluster2 | Get-DrsVMGroup
+    Name               Cluster         UserCreated        VM
+    ----               -------         -----------        --
+    VM Group 5         Cluster2        True               {VM101,VM102}
+    testVMGroup        Cluster2        True               {VM0,VM1001,VM1002}
+
+    Returns all DRS VM groups in cluster "Cluster2"
+
+    .Example
+    Get-VM DrsRuleTest1 | Get-DrsVMGroup
+    Name             Cluster   UserCreated   VM
+    ----             -------   -----------   --
+    TestVMGroup1     myClus0   True          {DrsRuleTest1, DrsRuleTest0}
+
+    Gets a DrsVMGroup by the related VM object. Returns the DrsVMGroup(s) of which a VM is a part, if any
+
+    .Outputs
+    If corrsponding DRS VMGroup(s) found, either DRSRule.VMGroup in "normal" mode, or VMware.Vim.ClusterVmGroup in "-ReturnRaw" mode. Else, $null
+
+    .Link
+    https://github.com/PowerCLIGoodies/DRSRule
+    New-DrsVMGroup
+    Remove-DrsVMGroup
+    Set-DrsVMGroup
+#>
+function Get-DrsVMGroup {
+  [CmdletBinding(DefaultParameterSetName = "ByName")]
   [OutputType([DRSRule.VMGroup],[VMware.Vim.ClusterVmGroup])]
   param(
-    [Parameter(Position = 0)]
+    ## Name of DRS VM Group to get (or, all if no name specified)
+    [Parameter(Position = 0, ParameterSetName="ByName")]
     [string]${Name} = '*',
 
-    [Parameter(Position = 1, ValueFromPipeline = $True)]
+    ## Cluster from which to get DRS VM group (or, all clusters if no name specified)
+    [Parameter(Position = 1, ParameterSetName="ByName", ValueFromPipeline=$True)]
     [PSObject[]]${Cluster},
 
+    ## Virtual Machine for which to get the corresponding DRS VMGroup(s), if any
+    [Parameter(Position = 0, Mandatory=$true, ValueFromPipeline=$true, ParameterSetName="ByRelatedObject")]
+    [VMware.VimAutomation.Types.VirtualMachine]$VM,
+
+    ## Switch:  return "raw" VMware.Vim.ClusterVmGroup object (contains less info, but useful to other functions that can consume this raw object)
     [switch]$ReturnRawGroup
   )
 
-  Process{
+  Process {
+    ## is this invocation getting item by related object?
+    $bByRelatedObject = $PSCmdlet.ParameterSetName -eq "ByRelatedObject"
     ## get cluster object(s) from the Cluster param (if no value was specified -- gets all clusters)
-    Get-ClusterObjFromClusterParam -Cluster $Cluster | ForEach-Object -Process {
+    $arrClustersToCheck = if ($bByRelatedObject) {$VM.VMHost.Parent} else {Get-ClusterObjFromClusterParam -Cluster $Cluster}
+    ## for the cluster(s) to check, try to get the pertinent VMGroups
+    $arrClustersToCheck | ForEach-Object -Process {
       $oThisCluster = $_
       ## update the View data, in case it was stale
       $oThisCluster.ExtensionData.UpdateViewData("ConfigurationEx")
       ## foreach ClusterVmGroup item, return something
       $oThisCluster.ExtensionData.ConfigurationEx.Group |
       Where-Object -FilterScript {
-        ## changed to "like" from "match" -- "*" with -match causes error, as it is expecting regex, not just std wildcard
-        ($_ -is [VMware.Vim.ClusterVmGroup]) -and ($_.Name -like ${Name})
+        ## where it's the given type, and, if ByRelatedObject, it contains the MoRef of this realted object -- else, if the name is like the specified name
+        ($_ -is [VMware.Vim.ClusterVmGroup]) -and $(if ($bByRelatedObject) {$_.VM -contains $VM.Id} else {$_.Name -like ${Name}})
       } |
       ForEach-Object -Process {
         if ($true -eq $ReturnRawGroup) {return $_}

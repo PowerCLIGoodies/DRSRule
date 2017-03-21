@@ -1,4 +1,8 @@
 #### ToDo items for DRSRule module
+- add #7: get a DrsVMGroup by the related VM; while at it, support getting a DrsVMHostGroup by the related VMHost
+	- add new parameterset for -VM or -VMHost, respectively, taking param from pipeline
+	- glean cluster from $VM.VMHost.Parent or $VMHost.Parent, respectively
+	- add appropriate tests
 - add [Pester](https://github.com/pester/Pester) tests
 	- `Get-Drs*` integration tests
 	- `New-Drs*`, `Set-Drs*`, `Remove-Drs*` tests
