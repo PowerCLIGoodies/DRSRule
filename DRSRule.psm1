@@ -1,5 +1,5 @@
 <#  .Description
-    This cmdlet retrieves the DRS VM groups. It returns DRS VM groups that correspond to the filter criteria provided by the cmdlet parameters.
+    Retrieves the DRS VM groups. It returns DRS VM groups that correspond to the filter criteria provided by the cmdlet parameters.
 
     The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.
 
@@ -39,7 +39,7 @@
     ----             -------   -----------   --
     TestVMGroup1     myClus0   True          {DrsRuleTest1, DrsRuleTest0}
 
-    Gets a DrsVMGroup by the related VM object. Returns the DrsVMGroup(s) of which a VM is a part, if any
+    Gets a DRS VMGroup by the related VM object. Returns the VMGroup(s) of which a VM is a part, if any
 
     .Outputs
     If corrsponding DRS VMGroup(s) found, either DRSRule.VMGroup in "normal" mode, or VMware.Vim.ClusterVmGroup in "-ReturnRaw" mode. Else, $null
@@ -107,31 +107,97 @@ function Get-DrsVMGroup {
   }
 }
 
-#.ExternalHelp DRSRule.Help.xml
-Function Get-DrsVMHostGroup {
-  [CmdletBinding()]
+
+<#  .Description
+    This cmdlet retrieves the DRS VM groups.
+    It returns DRS VM groups that correspond to the filter criteria provided by the cmdlet parameters.
+
+    The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.
+
+    .Synopsis
+    Retrieves the DRS VMHost groups
+
+    .Example
+    Get-DRSVMHostGroup -Name '*VMHost Group 1*'
+    Name               Cluster         UserCreated        VMHost
+    ----               -------         -----------        ------
+    VMHost Group 1     Cluster1        True               {esx1,esx2}
+    VMHost Group 12    Cluster1        True               {esx3}
+    New VMHost Group 1 Cluster2        True               {esx4,esx5,esx6}
+
+    Returns all DRS VMHost groups with name like '*VMHost Group 1*'
+
+    .Example
+    Get-DRSVMHostGroup -Cluster Cluster1 -Name 'VMHost Group 1'
+    Name               Cluster         UserCreated        VMHost
+    ----               -------         -----------        ------
+    VMHost Group 1     Cluster1        True               {esx1,esx2}
+
+    The DRS VMHost group with the exact name 'VMHost Group 1' from Cluster1 will be returned
+
+    .Example
+    Get-Cluster Cluster2 | Get-DrsVMHostGroup
+    Name               Cluster         UserCreated        VMHost
+    ----               -------         -----------        ------
+    oldVMHostGroup     Cluster2        True               {esx11,esx12}
+    VMHost Group DR    Cluster2        True               {esx13}
+    New VMHost Grp 3   Cluster2        True               {esx14,esx15,esx16}
+
+    Returns all DRS VMHost groups in cluster "Cluster2"
+
+    .Example
+    Get-VMHost esx11 | Get-DrsVMHostGroup
+    Name             Cluster   UserCreated   VMHost
+    ----             -------   -----------   ------
+    oldVMHostGroup   Cluster2  True          {esx11,esx12}
+
+    Gets a DRS VMHostGroup by the related VMHost object. Returns the VMHostGroup(s) of which a VMHost is a part, if any
+
+    .Outputs
+    If corrsponding DRS VMHostGroup(s) found, either DRSRule.VMHostGroup in "normal" mode, or VMware.Vim.ClusterHostGroup in "-ReturnRaw" mode. Else, $null
+
+    .Link
+    https://github.com/PowerCLIGoodies/DRSRule
+    New-DrsVMHostGroup
+    Remove-DrsVMHostGroup
+    Set-DrsVMHostGroup
+#>
+function Get-DrsVMHostGroup {
+  [CmdletBinding(DefaultParameterSetName = "ByName")]
   [OutputType([DRSRule.VMHostGroup],[VMware.Vim.ClusterHostGroup])]
   param(
-    [Parameter(Position = 0)]
+    ## Name of DRS VMHost Group to get (or, all if no name specified)
+    [Parameter(Position = 0, ParameterSetName="ByName")]
     [ValidateNotNullOrEmpty()]
     [string]${Name} = '*',
 
-    [Parameter(Position = 1, ValueFromPipeline = $True)]
+    ## Cluster from which to get DRS VMHost group (or, all clusters if no name specified)
+    [Parameter(Position = 1, ParameterSetName="ByName", ValueFromPipeline = $True)]
     [ValidateNotNullOrEmpty()]
     [PSObject[]]${Cluster},
 
+    ## VMHost for which to get the corresponding DRS VMHostGroup(s), if any
+    [Parameter(Position = 0, Mandatory=$true, ValueFromPipeline=$true, ParameterSetName="ByRelatedObject")]
+    [VMware.VimAutomation.Types.VMHost]$VMHost,
+
+    ## Switch:  return "raw" VMware.Vim.ClusterHostGroup object (contains less info, but useful to other functions that can consume this raw object)
     [switch]$ReturnRawGroup
   )
 
   Process{
-    Get-ClusterObjFromClusterParam -Cluster $Cluster | ForEach-Object -Process {
+    ## is this invocation getting item by related object?
+    $bByRelatedObject = $PSCmdlet.ParameterSetName -eq "ByRelatedObject"
+    ## get cluster object(s) from the Cluster param (if no value was specified -- gets all clusters)
+    $arrClustersToCheck = if ($bByRelatedObject) {$VMHost.Parent} else {Get-ClusterObjFromClusterParam -Cluster $Cluster}
+    ## for the cluster(s) to check, try to get the pertinent VMHostGroups
+    $arrClustersToCheck | ForEach-Object -Process {
       $oThisCluster = $_
       ## update the View data, in case it was stale
       $oThisCluster.ExtensionData.UpdateViewData("ConfigurationEx")
       ## foreach ClusterVmGroup item, return something
       $oThisCluster.ExtensionData.ConfigurationEx.Group |
       Where-Object -FilterScript {
-        ($_ -is [VMware.Vim.ClusterHostGroup]) -and ($_.Name -like ${Name})
+        ($_ -is [VMware.Vim.ClusterHostGroup]) -and $(if ($bByRelatedObject) {$_.Host -contains $VMHost.Id} else {$_.Name -like ${Name}})
       } |
       ForEach-Object -Process {
         if ($true -eq $ReturnRawGroup) {return $_}
