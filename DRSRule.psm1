@@ -219,30 +219,88 @@ function Get-DrsVMHostGroup {
   }
 }
 
-#.ExternalHelp DRSRule.Help.xml
-Function Get-DrsVMToVMRule {
-  [CmdletBinding()]
+
+<#  .Description
+    This cmdlet retrieves the DRS VM to VM rules.
+    It returns DRS VM to VM rules that correspond to the filter criteria provided by the cmdlet parameters.
+    The VM to VM rules can be either affinity- or anti-affinity rules.
+
+    The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.
+
+    .Synopsis
+    Retrieves the DRS VM to VM rules
+
+    .Example
+    Get-DrsVMToVMRule -Name 'Rule 1*'
+    Name         Cluster         Enabled     KeepTogether  Mandatory   VM
+    ----         -------         -------     ------------  ---------   --
+    Rule 1       Cluster1        False       False         False       {VM1, VM2}
+    Rule 12      Cluster2        True        True          True        {VM3, VM4}
+
+    Returns all DRS VM to VM rules with name like 'Rule 1*'
+
+    .Example
+    Get-Cluster Cluster2 | Get-DrsVMtoVMRule
+    Name         Cluster         Enabled     KeepTogether  Mandatory   VM
+    ----         -------         -------     ------------  ---------   --
+    Rule 0       Cluster2        False       False         False       {VM101, VM102}
+    Rule 11      Cluster2        True        True          True        {VM103, VM014}
+    Rule_old     Cluster2        False       True          True        {VM110, VM111}
+
+    Returns all DRS VM to VM rules in Cluster2
+
+    .Example
+    Get-VM VM3 | Get-DrsVMToVMRule
+    Name         Cluster         Enabled     KeepTogether  Mandatory   VM
+    ----         -------         -------     ------------  ---------   --
+    Rule 12      Cluster2        True        True          True        {VM3, VM4}
+
+    Returns all DRS VM to VM rules involving the specified VM, "VM3"
+
+    .Outputs
+    DRSRule.VMToVMRule object with information about the given DRS VM to VM rule, or a raw vSphere object of on of the types VMware.Vim.ClusterAffinityRuleSpec or VMware.Vim.ClusterAntiAffinityRuleSpec, depending on if the rule is affinity or anti-affinity
+
+    .Link
+    https://github.com/PowerCLIGoodies/DRSRule
+    New-DrsVMToVMRule
+    Remove-DrsVMToVMRule
+    Set-DrsVMToVMRule
+#>
+function Get-DrsVMToVMRule {
+  [CmdletBinding(DefaultParameterSetName = "ByName")]
   [OutputType([DRSRule.VMToVMRule],[VMware.Vim.ClusterAffinityRuleSpec],[VMware.Vim.ClusterAntiAffinityRuleSpec])]
   param(
-    [Parameter(Position = 0)]
+    ## Name of DRS VM-to-VMHost rule to get (or, all if no name specified)
+    [Parameter(Position = 0, ParameterSetName="ByName")]
     [string]${Name} = '*',
 
-    [Parameter(Position = 1, ValueFromPipeline = $True)]
+    ## Cluster from which to get DRS VM-to-VM rule (or, all clusters if no name specified)
+    [Parameter(Position = 1, ParameterSetName="ByName", ValueFromPipeline = $True)]
     [PSObject[]]${Cluster},
 
+    ## Virtual Machine for which to get the corresponding VM-to-VM DRS rule(s), if any
+    [Parameter(Position = 0, Mandatory=$true, ValueFromPipeline=$true, ParameterSetName="ByRelatedObject")]
+    [VMware.VimAutomation.Types.VirtualMachine]$VM,
+
+    ## Switch:  return DRS VM to VM rule as "raw" VMware.Vim.ClusterAffinityRuleSpec or VMware.Vim.ClusterAntiAffinityRuleSpec object (contains less info, but useful to other functions that can consume this raw object)
     [switch]$ReturnRawRule
   )
 
   Process {
-    Get-ClusterObjFromClusterParam -Cluster $Cluster | ForEach-Object -Process {
+    ## is this invocation getting item by related object?
+    $bByRelatedObject = $PSCmdlet.ParameterSetName -eq "ByRelatedObject"
+    ## get cluster object(s) from the Cluster param (if no value was specified -- gets all clusters)
+    $arrClustersToCheck = if ($bByRelatedObject) {$VM.VMHost.Parent} else {Get-ClusterObjFromClusterParam -Cluster $Cluster}
+    ## for the cluster(s) to check, try to get the pertinent VM-to-VM rules
+    $arrClustersToCheck | ForEach-Object -Process {
       $oThisCluster = $_
       ## update the View data, in case it was stale
       $oThisCluster.ExtensionData.UpdateViewData("ConfigurationEx")
       ## foreach rule item, return something
       $oThisCluster.ExtensionData.ConfigurationEx.Rule |
       Where-Object -FilterScript {
-        ($_.Name -like ${Name}) -and
-        ($_ -is [VMware.Vim.ClusterAffinityRuleSpec] -or $_ -is [VMware.Vim.ClusterAntiAffinityRuleSpec])
+        ($_ -is [VMware.Vim.ClusterAffinityRuleSpec] -or $_ -is [VMware.Vim.ClusterAntiAffinityRuleSpec]) -and
+        $(if ($bByRelatedObject) {$_.VM -contains $VM.Id} else {$_.Name -like ${Name}})
       } |
       ForEach-Object -Process {
         if ($ReturnRawRule) {$_}
