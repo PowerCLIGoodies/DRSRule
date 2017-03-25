@@ -37,9 +37,10 @@ $arrObjectTypesToGet | Foreach-Object {
         }
 
         It "Gets a 'raw' $($hshDrsruletypeToVMwareTypeInfo[$_] -join ' or ') object, via -ReturnRawGroup" {
+            $strThisTypeShortname = $_
             ## should be only one type returned
             $arrReturnTypes = if ($arrTmpObj = Invoke-Command -ScriptBlock {& "Get-Drs$_" -ReturnRaw | Select-Object -First 2}) {$arrTmpObj | Get-Member -ErrorAction:Stop | Select-Object -Unique -ExpandProperty TypeName} else {$null}
-            New-Variable -Name "bGetsOnly${_}Type" -Value ($hshDrsruletypeToVMwareTypeInfo[$_] -contains $arrReturnTypes)
+            New-Variable -Name "bGetsOnly${_}Type" -Value (($arrReturnTypes | Foreach-Object {$hshDrsruletypeToVMwareTypeInfo[$strThisTypeShortname] -contains $_}) -notcontains $false)
 
             ## gets only the desired object type should be $true
             (Get-Variable -ValueOnly -Name "bGetsOnly${_}Type") | Should Be $true

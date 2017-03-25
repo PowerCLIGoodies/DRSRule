@@ -326,32 +326,114 @@ function Get-DrsVMToVMRule {
   }
 }
 
-#.ExternalHelp DRSRule.Help.xml
-Function Get-DrsVMToVMHostRule {
-  [CmdletBinding()]
+
+<#  .Description
+    This cmdlet retrieves the DRS VM to VMHost rules.
+    It returns a number of DRS VM to VMHost rules that correspond to the filter criteria provided by the cmdlet parameters.
+
+    The default return type holds more information than the "raw" DRS object that vSphere uses.  There is also a switch to allow for just returning said raw DRS object, quite useful for consumption by other cmdlets in this module.
+
+    .Synopsis
+    Retrieve the DRS VM to VMHost rules
+
+    .Example
+    Get-DrsVMToVMHostRule -Name 'Rule 1*'
+    Name         Cluster         Enabled     Mandatory   VMGroupName
+    ----         -------         -------     ---------   -----------
+    Rule 1       Cluster1        False       False       VM Group 1
+    Rule 11      Cluster2        True        True        All VM
+
+    Returns all DRS VM to VMHost rules with name like 'Rule 1*'
+
+    .Example
+    Get-DrsVMtoVMHostRule -Cluster Cluster[12]
+    Name         Cluster         Enabled     Mandatory   VMGroupName
+    ----         -------         -------     ---------   -----------
+    Rule 0       Cluster1        True        False       VM Group 1
+    Rule 1       Cluster1        False       False       VM Group 12
+    Rule 2       Cluster1        False       False       VM Group 31
+    Rule 11      Cluster2        True        True        All VM
+    Rule_bak     Cluster2        True        False       testVMGroup
+    Rule_toDel   Cluster2        False       True        VM Group 5
+
+    Returns all DRS VM to VMHost rules in clusters named "Cluster1" and "Cluster2"
+
+    .Example
+    Get-VM myVM0 | Get-DrsVMtoVMHostRule
+    Name         Cluster         Enabled     Mandatory   VMGroupName
+    ----         -------         -------     ---------   -----------
+    Rule 2       Cluster1        False       False       VM Group 31
+
+    Returns all DRS VM to VMHost rules in the cluster in which "myVM0" resides that involve a DRS VMGroup of which "myVM0" is a member
+
+    .Example
+    Get-VMHost myhost0.dom.com | Get-DrsVMtoVMHostRule
+    Name         Cluster         Enabled     Mandatory   VMGroupName
+    ----         -------         -------     ---------   -----------
+    Rule_toDel   Cluster2        False       True        VM Group 5
+
+    Returns all DRS VM to VMHost rules in the cluster of which VMHost "myhost0.dom.com" is a part, and that involve a DRS VMHostGroup of which "myhost0.dom.com" is a member (either as the Affine or AntiAffine VMHost group)
+
+    .Outputs
+    DRSRule.VMToVMHostRule bject with information about the given DRS VM to VMHost rule, or a "raw" VMware.Vim.ClusterVmHostRuleInfo vSphere object
+
+    .Link
+    https://github.com/PowerCLIGoodies/DRSRule
+    New-DrsVMToVMHostRule
+    Remove-DrsVMToVMHostRule
+    Set-DrsVMToVMHostRule
+#>
+function Get-DrsVMToVMHostRule {
+  [CmdletBinding(DefaultParameterSetName = "ByName")]
   [OutputType([DRSRule.VMToVMHostRule],[VMware.Vim.ClusterVmHostRuleInfo])]
   param(
-    [Parameter(Position = 0)]
+    ## Name of DRS VM affinity/antiaffinity rule to get (or, all if no name specified)
+    [Parameter(Position = 0, ParameterSetName="ByName")]
     [ValidateNotNullOrEmpty()]
     [string]${Name} = '*',
 
-    [Parameter(Position = 1, ValueFromPipeline = $True)]
+    ## Cluster from which to get DRS VM-to-VMhost rule (or, all clusters if no name specified)
+    [Parameter(Position = 1, ParameterSetName="ByName", ValueFromPipeline = $True)]
     [PSObject[]]${Cluster},
 
+    ## Virtual Machine for which to get the corresponding VM-to-VMHost DRS rule(s), if any
+    [Parameter(Position = 0, Mandatory=$true, ValueFromPipeline=$true, ParameterSetName="ByRelatedVM")]
+    [VMware.VimAutomation.Types.VirtualMachine]$VM,
+
+    ## VMHost for which to get the corresponding VM-to-VMHost DRS rule(s), if any
+    [Parameter(Position = 0, Mandatory=$true, ValueFromPipeline=$true, ParameterSetName="ByRelatedVMHost")]
+    [VMware.VimAutomation.Types.VMHost]$VMHost,
+
+    ## Switch:  return DRS VM to VMHost rule as "raw" VMware.Vim.ClusterVmHostRuleInfo object (contains less info, but useful to other functions that can consume this raw object)
     [switch]$ReturnRawRule
   )
 
   Process {
-    Get-ClusterObjFromClusterParam -Cluster $Cluster | ForEach-Object -Process {
+    ## is this invocation getting item by related object?
+    $bByRelatedObject = "ByRelatedVM", "ByRelatedVMHost" -contains $PSCmdlet.ParameterSetName
+    ## get cluster object(s) from the Cluster param (if no value was specified -- gets all clusters), and the FilterScript scriptblock to use for the Where-Object call later, for "filtering" rules
+    $arrClustersToCheck, $sbFilterScript = if ($bByRelatedObject) {
+      if ($PSCmdlet.ParameterSetName -eq "ByRelatedVM") {
+        ## the cluster in which the VM resides, and, a scriptblock that checks if the list of names of DRS VMGroups of which this VM is a part contains the VMGroupName property's value in the given VMToVMHost rule
+        $VM.VMHost.Parent, {($VM | Get-DrsVMGroup -ReturnRaw).Name -contains $_.VmGroupName}
+      } else {
+        $arrNamesOfVMHostGroups_thisVMHost = ($VMHost | Get-DrsVMHostGroup -ReturnRaw).Name
+        ## the cluster in which the VMHost resides, and, a scriptblock that checks if the list of names of DRS VMHostGroups of which this VMHost is a part contains either the AffineHostGroupName or AffineHostGroupName property's value in the given VMToVMHost rule
+        #   good way to do it using Compare-Object, but possibly more confusing to read -- checks to see if there is more than zero "equal" items in the two arrays
+        # $VMHost.Parent, {(Compare-Object -ReferenceObject $arrNamesOfVMHostGroups_thisVMHost -DifferenceObject @($_.AffineHostGroupName, $_.AntiAffineHostGroupName) -IncludeEqual -ExcludeDifferent | Measure-Object).Count -gt 0}
+        $VMHost.Parent, {$arrNamesOfVMHostGroups_thisVMHost -contains $_.AffineHostGroupName -or ($arrNamesOfVMHostGroups_thisVMHost -contains $_.AntiAffineHostGroupName)}
+      } ## end else
+    } else {(Get-ClusterObjFromClusterParam -Cluster $Cluster), {$_.Name -like $Name}}
+    ## for the cluster(s) to check, try to get the pertinent VM-to-VMHost rules
+    $arrClustersToCheck | ForEach-Object -Process {
       $oThisCluster = $_
       ## update the View data, in case it was stale
       $oThisCluster.ExtensionData.UpdateViewData("ConfigurationEx")
       ## foreach rule item, return something
       $oThisCluster.ExtensionData.ConfigurationEx.Rule |
-      Where-Object -FilterScript {
-        $_.Name -like ${Name} -and
-        $_ -is [VMware.Vim.ClusterVmHostRuleInfo]
-      } |
+      Where-Object -FilterScript {$_ -is [VMware.Vim.ClusterVmHostRuleInfo]} |
+      ## filter by the VmGroupName, the VMHostGroupName, or by the rule name, depending on the parameters supplied to this cmdlet call
+      Where-Object -FilterScript $sbFilterScript |
       ForEach-Object -Process {
         if ($ReturnRawRule) {$_}
         else {
