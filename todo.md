@@ -1,15 +1,8 @@
 #### ToDo items for DRSRule module
-- add #7: get a DrsVMGroup by the related VM; while at it, support getting a DrsVMHostGroup by the related VMHost, DRS VM-to-VM rule by VM, and DRS VM-to-VMHost rule by VM or VMHost
-	- add new parameterset for -VM or -VMHost, respectively, taking param from pipeline
-	- glean cluster from $VM.VMHost.Parent or $VMHost.Parent, respectively
-	- done: `Get-DrsVMGroup`, `Get-DrsVMHostGroup`, `Get-DrsVMToVMRule`, `Get-DrsVMToVMHostRule`
-	- add appropriate tests
 - add [Pester](https://github.com/pester/Pester) tests
-	- `Get-Drs*` integration tests
 	- `New-Drs*`, `Set-Drs*`, `Remove-Drs*` tests
 - add SDRS rule support
 - add ability to specify prefix for names of new objects during Import
-- add `-RelatedObject` type of param for `Get-DrsVMGroup` (by related VM), `Get-DrsVMHostGroup` (by related VMHost)
 - add support for `[string[]]` values to `-Name` param for `Get-DrsVMGroup`, `Get-DrsVMHostGroup`
 - add `-Type` param for `Import-DrsRule`, so one can import just rules/groups of given type
 - add verbosity to `WhatIf` info for
