@@ -67,3 +67,29 @@ $arrObjectTypesToGet | Foreach-Object {
         }
     }
 }
+
+
+Describe -Tags "Get" -Name "Get-DrsVMToVMRule" {
+    It "Gets a DRS VM-To-VM Rule from related VM" {
+        $oSomeRule = Get-DrsVMToVMRule -ReturnRaw | Select-Object -First 1
+        $morefVMInRule = $oSomeRule.Vm | Select-Object -Last 1
+
+        $bGetsRuleByRelatedVM = (Get-VM -Id $morefVMInRule | Get-DrsVMToVMRule).Name -contains $oSomeRule.Name
+
+        ## gets only the desired object type should be $true
+        $bGetsRuleByRelatedVM | Should Be $true
+    }
+}
+
+
+# Describe -Tags "Get" -Name "Get-DrsVMToVMHostRule" {
+#     It "Gets a DRS VM-To-VMHost Rule from related VM" {
+#         $oSomeRule = Get-DrsVMToVMHostRule | Select-Object -First 1
+#         $morefVMInRule = $oSomeRule.Vm | Select-Object -Last 1
+
+#         $bGetsRuleByRelatedVM = (Get-VM -Id $morefVMInRule | Get-DrsVMToVMRule).Name -contains $oSomeRule.Name
+
+#         ## gets only the desired object type should be $true
+#         $bGetsRuleByRelatedVM | Should Be $true
+#     }
+# }
