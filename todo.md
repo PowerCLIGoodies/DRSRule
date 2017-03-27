@@ -1,10 +1,8 @@
 #### ToDo items for DRSRule module
 - add [Pester](https://github.com/pester/Pester) tests
-	- `Get-Drs*` integration tests
 	- `New-Drs*`, `Set-Drs*`, `Remove-Drs*` tests
 - add SDRS rule support
 - add ability to specify prefix for names of new objects during Import
-- add `-RelatedObject` type of param for `Get-DrsVMGroup` (by related VM), `Get-DrsVMHostGroup` (by related VMHost)
 - add support for `[string[]]` values to `-Name` param for `Get-DrsVMGroup`, `Get-DrsVMHostGroup`
 - add `-Type` param for `Import-DrsRule`, so one can import just rules/groups of given type
 - add verbosity to `WhatIf` info for

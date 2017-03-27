@@ -37,9 +37,10 @@ $arrObjectTypesToGet | Foreach-Object {
         }
 
         It "Gets a 'raw' $($hshDrsruletypeToVMwareTypeInfo[$_] -join ' or ') object, via -ReturnRawGroup" {
+            $strThisTypeShortname = $_
             ## should be only one type returned
             $arrReturnTypes = if ($arrTmpObj = Invoke-Command -ScriptBlock {& "Get-Drs$_" -ReturnRaw | Select-Object -First 2}) {$arrTmpObj | Get-Member -ErrorAction:Stop | Select-Object -Unique -ExpandProperty TypeName} else {$null}
-            New-Variable -Name "bGetsOnly${_}Type" -Value ($hshDrsruletypeToVMwareTypeInfo[$_] -contains $arrReturnTypes)
+            New-Variable -Name "bGetsOnly${_}Type" -Value (($arrReturnTypes | Foreach-Object {$hshDrsruletypeToVMwareTypeInfo[$strThisTypeShortname] -contains $_}) -notcontains $false)
 
             ## gets only the desired object type should be $true
             (Get-Variable -ValueOnly -Name "bGetsOnly${_}Type") | Should Be $true
@@ -64,5 +65,43 @@ $arrObjectTypesToGet | Foreach-Object {
             (Get-Variable -ValueOnly -Name "bGetsOnly${_}Type") | Should Be $true
             $bGetsItemFromSpecifiedCluster | Should Be $true
         }
+    }
+}
+
+
+Describe -Tags "Get" -Name "Get-DrsVMToVMRule" {
+    It "Gets a DRS VM-To-VM Rule from related VM" {
+        $oSomeRule = Get-DrsVMToVMRule -ReturnRaw | Select-Object -First 1
+        $morefVMInRule = $oSomeRule.Vm | Select-Object -Last 1
+
+        $bGetsRuleByRelatedVM = (Get-VM -Id $morefVMInRule | Get-DrsVMToVMRule).Name -contains $oSomeRule.Name
+
+        ## gets only the desired object type should be $true
+        $bGetsRuleByRelatedVM | Should Be $true
+    }
+}
+
+
+Describe -Tags "Get" -Name "Get-DrsVMToVMHostRule" {
+    It "Gets a DRS VM-To-VMHost Rule from related VM" {
+        ## get a DRS VM-to-VMHost rule where the associated DRS VMGroup has one or more VMs in it
+        $oSomeRule = Get-DrsVMToVMHostRule | Where-Object {(Get-DrsVMGroup -Name $_.VmGroupName -Cluster $_.Cluster -ReturnRaw).Vm.Count -gt 0} | Select-Object -First 1
+        $morefVMInRule = (Get-DrsVMGroup -Name $oSomeRule.VmGroupName -Cluster $oSomeRule.Cluster -ReturnRaw).Vm | Select-Object -Last 1
+
+        $bGetsRuleByRelatedVM = (Get-VM -Id $morefVMInRule | Get-DrsVMToVMHostRule).Name -contains $oSomeRule.Name
+
+        ## gets only the desired object type should be $true
+        $bGetsRuleByRelatedVM | Should Be $true
+    }
+
+    It "Gets a DRS VM-To-VMHost Rule from related VMHost" {
+        ## get a DRS VM-to-VMHost rule where the associated DRS VMHostGroup has one or more VMHosts in it
+        $oSomeRule = Get-DrsVMToVMHostRule | Where-Object {(Get-DrsVMHostGroup -Name ($_.AffineHostGroupName,$_.AntiAffineHostGroupName | Where-Object {-not [String]::IsNullOrEmpty($_)}) -Cluster $_.Cluster -ReturnRaw).Host.Count -gt 0} | Select-Object -First 1
+        $morefVMHostInRule = (Get-DrsVMHostGroup -Name ($oSomeRule.AffineHostGroupName,$oSomeRule.AntiAffineHostGroupName | Where-Object {-not [String]::IsNullOrEmpty($_)}) -Cluster $oSomeRule.Cluster -ReturnRaw).Host | Select-Object -Last 1
+
+        $bGetsRuleByRelatedVMHost = (Get-VMHost -Id $morefVMHostInRule | Get-DrsVMToVMHostRule).Name -contains $oSomeRule.Name
+
+        ## gets only the desired object type should be $true
+        $bGetsRuleByRelatedVMHost | Should Be $true
     }
 }

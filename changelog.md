@@ -3,6 +3,7 @@
 ### Changelog
 
 ### v1.next
+- \[enhancement] added support for enhancement suggested in [Issue #7](https://github.com/PowerCLIGoodies/DRSRule/issues/7): get a DRS `VMGroup` by the related VM; while at it, added support for getting a DRS `VMHostGroup` by the related VMHost, DRS `VMToVMRule` by VM, and DRS `VMToVMHostRule` by VM or VMHost
 - \[improvment] added [Pester](https://github.com/pester/Pester) tests for `Get-Drs*` cmdlets
 
 ### v1.0.1
