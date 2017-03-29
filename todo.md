@@ -1,0 +1,15 @@
+#### ToDo items for DRSRule module
+- add [Pester](https://github.com/pester/Pester) tests
+	- `New-Drs*`, `Set-Drs*`, `Remove-Drs*` tests
+- add SDRS rule support
+- add ability to specify prefix for names of new objects during Import
+- add support for `[string[]]` values to `-Name` param for `Get-DrsVMGroup`, `Get-DrsVMHostGroup`
+- add `-Type` param for `Import-DrsRule`, so one can import just rules/groups of given type
+- add verbosity to `WhatIf` info for
+	- New/Set-DrsVMHostGroup output -- include VMHosts' names
+	- New/Set-DrsVMGroup output -- include VMs' names
+- add ability to rename groups/rules via `Set-Drs*` functions
+- ?remove spots that re-assign values to param vars (use new var name instead of re-using param name, like `$VM = $VM | %{...do something...})`; there is slight weirdness when acting on those further:  `ValidateScript()` seems to run again, and if the var is not of the given type, throws `The variable cannot be validated because the value System.Management.Automation.PSObject[] is not a valid value for the VMHost variable.`, for example, but later on in the function, not at the start
+- update `Get-Drs*` behavior to match standard `Get-*` cmdlets' behavior of returning error when no item found of given name when `$Name` has no wildcard:
+	- `Get-DrsVMGroup bogusGroupName` should throw error
+- add function to get objects from exported JSON, to essentially return info items that could be used for `New-Drs*`, but that would be useful to see what items are stored in given JSON
