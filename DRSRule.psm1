@@ -942,36 +942,99 @@ Function Remove-DrsVMToVMRule {
   }
 }
 
-#.ExternalHelp DRSRule.Help.xml
-Function Set-DrsVMGroup {
-  [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium)]
+<#  .Description
+    This cmdlet changes settings of the DRS VM group with the provided parameters
+
+    .Synopsis
+    Cmdlet to change a DRS VM group
+
+    .Example
+    Get-DrsVMGroup -Name 'VM Group 1' | Set-DrsVMGroup -AddVM vm3 -Cluster Cluster1
+    Add the given virtual machine to DRS VM group 'VM Group 1' on cluster 'Cluster1'
+    Name               Cluster         UserCreated        VM
+    ----               -------         -----------        --
+    VM Group 1         Cluster1        False              {VM1,VM2,VM3}
+
+    .Example
+    Set-DrsVMGroup -Name 'VM Group 1' -Append -VM vm4 -Cluster Cluster1
+    Add the given virtual machine to DRS VM group 'VM Group 1' on cluster 'Cluster1'. This is the same functionality as provided by the more recently added -AddVM parameter, but is being kept in place in order to remain backwards compatible with existing scripts out there.
+    Name               Cluster         UserCreated        VM
+    ----               -------         -----------        --
+    VM Group 1         Cluster1        False              {VM1,VM2,VM3,VM4}
+
+    .Example
+    Get-DrsVMGroup -Name 'VM Group 1' | Set-DrsVMGroup -RemoveVM vm1,vm2 -Cluster Cluster1
+    Remove the given virtual machines from DRS VM group 'VM Group 1' on cluster 'Cluster1'
+    Name               Cluster         UserCreated        VM
+    ----               -------         -----------        --
+    VM Group 1         Cluster1        False              {VM3,VM4}
+
+    .Outputs
+    DRSRule.VMGroup object with information about the updated DRS VM group
+
+    .Link
+    https://github.com/PowerCLIGoodies/DRSRule
+    Get-DrsVMGroup
+    New-DrsVMGroup
+    Remove-DrsVMGroup
+#>
+function Set-DrsVMGroup {
+  [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium, DefaultParameterSetName = "ByVMParam")]
   [OutputType([DRSRule.VMGroup])]
-  param(
+  param (
+    ## The name of the DRS VM group to modify
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
     [ValidateNotNullOrEmpty()]
-    [string]${Name},
+    [string]$Name,
 
+    ## Cluster in which the DRS VM group resides
     [Parameter(Mandatory = $True, Position = 1, ValueFromPipelineByPropertyName = $True)]
     [ValidateNotNullOrEmpty()][ValidateScript({
-      ## make sure that all values are either a String or a Cluster obj
       _Test-TypeOrString -Object $_ -Type ([VMware.VimAutomation.ViCore.Types.V1.Inventory.Cluster])
     })]
-    [PSObject[]]${Cluster},
+    [PSObject[]]$Cluster,
 
-    [parameter(ValueFromPipeline=$true)]
+    ## VM(s) to add to the DRS VM group. The VMs can be specified as strings (their names) or as VirtualMachine objects.
+    [parameter(Mandatory = $True, ParameterSetName="AddVM")]
     [ValidateNotNullOrEmpty()][ValidateScript({
-      ## make sure that all values are either a String or a VM obj
+      _Test-TypeOrString -Object $_ -Type ([VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine])
+    })]$AddVM,
+
+    ## VM(s) to remove from the DRS VM group. The VMs can be specified as strings (their names) or as VirtualMachine objects.
+    [parameter(Mandatory = $True, ParameterSetName="RemoveVM")]
+    [ValidateNotNullOrEmpty()][ValidateScript({
+      _Test-TypeOrString -Object $_ -Type ([VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine])
+    })]$RemoveVM,
+
+    ## The VM that shall be in the DRS VM group. The VMs can be specified as strings (their names) or as VirtualMachine objects. Without the -Append parameter, this -VM parameter essentially overwrites the existing list of VMGroup members with the VMs specified.
+    #
+    ## The -VM parameter, when used with the -Append parameter, provides the same functionality as the more recently added -AddVM parameter.  The -VM and -Append parameters are being kept as-is so as to maintain backwards compatibility with existing scripts.
+    [parameter(ValueFromPipeline=$true, ParameterSetName="ByVMParam")]
+    [ValidateNotNullOrEmpty()][ValidateScript({
       _Test-TypeOrString -Object $_ -Type ([VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine])
     })]
-    [PSObject[]]${VM},
+    [PSObject[]]$VM,
 
-    [Switch]${Append}
-  )
+    ## Switch: append the given VM(s) as members of the DRS VM group ($true), or set them as the only members of the group ($false or not specified)?
+    [parameter(ParameterSetName="ByVMParam")][Switch]$Append
+  ) ## end param
 
-  Process{
-   Get-ClusterObjFromClusterParam -Cluster ${Cluster} | ForEach-Object -Process {
+  Process {
+   Get-ClusterObjFromClusterParam -Cluster $Cluster | ForEach-Object -Process {
       $oThisCluster = $_
-      $VM = $VM | Foreach-Object {
+
+      ## the VM names/object to consider when setting this DRS VM group, based on the parameter set in play
+      ## get 'em here
+      ## then, append/remove/overwrite as appropriate
+
+      $arrVMInputToConsider = Switch ($PsCmdlet.ParameterSetName) {
+        "ByVMParam" {$VM; break}
+        "AddVM" {$AddVM; break}
+        "RemoveVM" {$RemoveVM}
+      } ## end switch
+
+      ## the actual VM objects to use for the VMGroup update
+      $arrVMsForGroupUpdate = $arrVMInputToConsider | Foreach-Object {
         $oThisVmItem = $_
         if($_ -is [System.String]) {
           try {
@@ -983,32 +1046,57 @@ Function Set-DrsVMGroup {
         else {
           $oThisVmItem
         }
-      }
+      } ## end foreach-object
+
       ## check that VMGroup exists
       $target = Get-DrsVMGroup -Cluster $oThisCluster -Name $Name -ReturnRawGroup
       if ($null -eq $target) {Throw "No DrsVmGroup named '$Name' in cluster '$($oThisCluster.Name)'. Valid group name?"}
       else {Write-Verbose "DrsVmGroup '$Name' found in cluster '$($oThisCluster.Name)'"}
-      if($psCmdlet.ShouldProcess("$($oThisCluster.Name)","Set DRS VM group '${Name}'")) {
+      if ($psCmdlet.ShouldProcess("$($oThisCluster.Name)","Set DRS VM group '$Name'")) {
+        ## the IDs of the VMs of interest for this group update (will be added to-, removed from-, or will replace the existing VMGroup members)
+        $arrMembersIdsOfInterest = $arrVMsForGroupUpdate | ForEach-Object -Process {$_.Id}
+
+        ## new cluster config spec
         $spec = New-Object VMware.Vim.ClusterConfigSpecEx
         $groupSpec = New-Object VMware.Vim.ClusterGroupSpec
         $groupSpec.Operation = [VMware.Vim.ArrayUpdateOperation]::edit
+        $arrOriginalVMIDsInTarget = $target.VM
         $groupSpec.Info = $target
-        $arrNewMembersIds = ${VM} | ForEach-Object -Process {$_.Id}
-        if(${Append}) {
-          $groupSpec.Info.VM += $arrNewMembersIds
-        }
+
+
+        $arrVMInputToConsider = Switch ($PsCmdlet.ParameterSetName) {
+          "ByVMParam" {
+            if ($Append) {$groupSpec.Info.VM += $arrMembersIdsOfInterest | Where-Object {$groupSpec.Info.VM -notcontains $_}}
+            else {$groupSpec.Info.VM = $arrMembersIdsOfInterest}
+            break
+          } ## end case
+          ## just add the given VM IDs (same as -Append param with -VM param, which were kept for backwards compatibility)
+          "AddVM" {$groupSpec.Info.VM += $arrMembersIdsOfInterest | Where-Object {$groupSpec.Info.VM -notcontains $_}; break}
+          ## remove the given VM IDs from the spec
+          "RemoveVM" {
+            ## if the none of the specified VMs are already a part of the group, write a verbose message to that effect
+            if ((Compare-Object -ReferenceObject $groupSpec.Info.VM -DifferenceObject $arrMembersIdsOfInterest -IncludeEqual -ExcludeDifferent | Measure-Object).Count -eq 0) {
+                Write-Verbose "None of the VMs specified are in VMGroup '$($target.Name)' -- no VMs will be removed from group"
+            } ## end if
+            ## else, just "keep" the VM IDs that were not specified to be removed
+            else {$groupSpec.Info.VM = $groupSpec.Info.VM | Where-Object {$arrMembersIdsOfInterest -notcontains $_}}
+          } ## end case
+        } ## end switch
+
+        ## if the VM list is the same between the existing VMGroup and the new ClusterGroupSpec, do not bother calling ReconfigureComputeResource() method
+        if ($null -eq (Compare-Object -ReferenceObject $arrOriginalVMIDsInTarget -DifferenceObject $groupSpec.Info.VM)) {
+            Write-Verbose "Not changing VMGroup (no new members added, and no members removed"
+        } ## end if
         else {
-          $groupSpec.Info.VM = $arrNewMembersIds
-        }
-        $spec.GroupSpec += $groupSpec
+          $spec.GroupSpec += $groupSpec
+          $oThisCluster.ExtensionData.ReconfigureComputeResource($spec,$True)
+        } ## end else
 
-        $oThisCluster.ExtensionData.ReconfigureComputeResource($spec,$True)
-
-        Get-DrsVMGroup -Cluster ${Cluster} -Name ${Name}
-      }
-    }
-  }
-}
+        Get-DrsVMGroup -Cluster $Cluster -Name $Name
+      } ## end if shouldprocess
+    } ## end foreach-object
+  } ## end process
+} ## end fn
 
 #.ExternalHelp DRSRule.Help.xml
 Function Set-DrsVMHostGroup {
