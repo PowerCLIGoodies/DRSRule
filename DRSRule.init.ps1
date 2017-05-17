@@ -1,9 +1,12 @@
-﻿if((Get-PowerCLIVersion).Build -ge 4624819){
-    $pcliDll = "${env:\ProgramFiles(x86)}\VMware\Infrastructure\PowerCLI\Modules\VMware.VimAutomation.Core\VMware.Vim.dll"
-}
-else{
-    $pcliDll = "${env:\ProgramFiles(x86)}\VMware\Infrastructure\vSphere PowerCLI\VMware.Vim.dll"
-}
+## the version of PowerCLI at which the path to "VMware.Vim.dll" change from "${env:\ProgramFiles(x86)}\VMware\Infrastructure\vSphere PowerCLI\." (two folders up from the core module's directory) to the VMware.VimAutomation.Core module directory
+## build 4624819 is PowerCLI 6.5rel1 -- 6.5.0, build 4624819; this (6.5rel1) is module version 6.5.0.2604913
+$verPowerCLIWhereDllMoved = [System.Version]"6.5.0.2604913"
+
+$oModuleInfo = Get-Module -ListAvailable -Name VMware.VimAutomation.Core
+## the directory in which the VMware.Vim.dll file resides, based on module version
+$strVMwareVimDllDirectory = if ($oModuleInfo.Version -ge $verPowerCLIWhereDllMoved) {$oModuleInfo.ModuleBase} else {(Get-Item (Get-Module VMware.VimAutomation.Core).ModuleBase).Parent.Parent.FullName}
+## the full filespec of the DLL
+$pcliDll = Join-Path -Path $strVMwareVimDllDirectory -ChildPath "VMware.Vim.dll"
 
 Add-Type -ReferencedAssemblies $pcliDll -TypeDefinition @"
   using VMware.Vim;
