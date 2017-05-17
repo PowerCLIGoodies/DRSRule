@@ -2,6 +2,9 @@
 
 ### Changelog
 
+### v1.next
+- \[bugfix] fixed [Issue #9](https://github.com/PowerCLIGoodies/DRSRule/issues/9) -- updated code that determines the location of the referenced `VMware.Vim.dll` file based on PowerCLI module version. Tested with PowerCLI 6.3, 6.5rel1, and 6.5.1, and with having installed v6.3 in a non-default location
+
 ### v1.1.0
 29 Mar 2017
 - \[enhancement] added support for enhancement suggested in [Issue #7](https://github.com/PowerCLIGoodies/DRSRule/issues/7): get a DRS `VMGroup` by the related VM; while at it, added support for:
