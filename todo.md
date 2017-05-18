@@ -1,8 +1,6 @@
 #### ToDo items for DRSRule module
-- for [Issue #2](https://github.com/PowerCLIGoodies/DRSRule/issues/2), add ability to remove one or more target items from a DRS VMGroup or VMHost group via `Set-DrsVMGroup`, `Set-DrsVMHostGroup`
-	- also, investigate other item reported in that issue of a problem "when the user wants to remove all VMs from a VM group. That errors out"
-	- in branch `enha_RemoveItemFromGrp`, added `-AddVM` and `-RemoveVM` parameters to `Set-DrsVMGroup` for easier adds and removes of VMs to/from DRS VM group
 - look into possibility of increasing speed in `Get-DrsVMGroup` (somewhat slow in medium to large environments)
+- investigate possiblity of removing all VM/VMHost members of DRS VM/VMHost groups. UI does not support, but API docs say that the member field can have zero or more values
 - add [Pester](https://github.com/pester/Pester) tests
 	- `New-Drs*`, `Set-Drs*`, `Remove-Drs*` tests
 - add SDRS rule support
