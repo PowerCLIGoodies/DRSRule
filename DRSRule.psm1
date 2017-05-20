@@ -667,7 +667,7 @@ Function New-DrsVMToVMHostRule {
       if ($null -eq (Get-DrsVMHostGroup -Cluster $oThisCluster -Name $strDrsVMHostGroupNameToCheck)) {Throw "No DrsVMHostGroup named '$strDrsVMHostGroupNameToCheck' in cluster '$($oThisCluster.Name)'. Valid group name?"}
       else {Write-Verbose "DrsVMHostGroup '$strDrsVMHostGroupNameToCheck' found in cluster '$($oThisCluster.Name)'"}
 
-      if($psCmdlet.ShouldProcess("$($oThisCluster.Name)","Create $(if ([String]::IsNullOrEmpty(${AffineHostGroupName})) {'AffineVMToVMHost'} else {'AntiAffineVMToVMHost'}) DRS rule '${Name}'")) {
+      if($psCmdlet.ShouldProcess("$($oThisCluster.Name)","Create $(if ([String]::IsNullOrEmpty(${AffineHostGroupName})) {'AntiAffineVMToVMHost'} else {'AffineVMToVMHost'}) DRS rule '${Name}'")) {
         $spec = New-Object VMware.Vim.ClusterConfigSpecEx
 
         $newRule = New-Object VMware.Vim.ClusterVmHostRuleInfo
