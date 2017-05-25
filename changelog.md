@@ -3,7 +3,7 @@
 ### Changelog
 
 ### v1.2.0
-21 May 2017
+25 May 2017
 - \[enhancement] per [Issue #2](https://github.com/PowerCLIGoodies/DRSRule/issues/2), added ability to remove one or more target items from a DRS VMGroup or VMHost group via `Set-DrsVMGroup`, `Set-DrsVMHostGroup`
   - added `-AddVM` and `-RemoveVM` parameters to `Set-DrsVMGroup` for easier adds and removes of VMs to/from DRS VM group
   - added `-AddVMHost` and `-RemoveVMHost` parameters to `Set-DrsVMHostGroup` for easier adds and removes of VMHosts to/from DRS VMHost group
