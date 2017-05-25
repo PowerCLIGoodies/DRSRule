@@ -2,6 +2,16 @@
 
 ### Changelog
 
+### v1.2.0
+25 May 2017
+- \[enhancement] per [Issue #2](https://github.com/PowerCLIGoodies/DRSRule/issues/2), added ability to remove one or more target items from a DRS VMGroup or VMHost group via `Set-DrsVMGroup`, `Set-DrsVMHostGroup`
+  - added `-AddVM` and `-RemoveVM` parameters to `Set-DrsVMGroup` for easier adds and removes of VMs to/from DRS VM group
+  - added `-AddVMHost` and `-RemoveVMHost` parameters to `Set-DrsVMHostGroup` for easier adds and removes of VMHosts to/from DRS VMHost group
+  - retained `-VM`/`-VMHost` and `-Append` parameters for these two functions, respectively, to maintain backwards compatibility with older code
+- \[errorHandling] added error handling, for now, for problem when the user wants to remove all VMs from a VM group. Further investigation pending
+- \[bugfix] fixed [Issue #9](https://github.com/PowerCLIGoodies/DRSRule/issues/9) -- updated code that determines the location of the referenced `VMware.Vim.dll` file based on PowerCLI module version. Tested with PowerCLI 6.3, 6.5rel1, and 6.5.1, and with having installed v6.3 in a non-default location
+- \[bugfix] fixed [Issue #10](https://github.com/PowerCLIGoodies/DRSRule/issues/10) -- cmdlet `New-DrsVMtoVMHostRule` previously had `Verbose` and `WhatIf` output that were inaccurate regarding the new rule being a affinity or an anti-affinity rule (was backwards)
+
 ### v1.1.0
 29 Mar 2017
 - \[enhancement] added support for enhancement suggested in [Issue #7](https://github.com/PowerCLIGoodies/DRSRule/issues/7): get a DRS `VMGroup` by the related VM; while at it, added support for:

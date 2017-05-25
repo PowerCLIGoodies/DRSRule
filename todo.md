@@ -1,4 +1,6 @@
 #### ToDo items for DRSRule module
+- look into possibility of increasing speed in `Get-DrsVMGroup` (somewhat slow in medium to large environments)
+- investigate possiblity of removing all VM/VMHost members of DRS VM/VMHost groups. UI does not support, but API docs say that the member field can have zero or more values
 - add [Pester](https://github.com/pester/Pester) tests
 	- `New-Drs*`, `Set-Drs*`, `Remove-Drs*` tests
 - add SDRS rule support
