@@ -2,7 +2,8 @@
 ## build 4624819 is PowerCLI 6.5rel1 -- 6.5.0, build 4624819; this (6.5rel1) is module version 6.5.0.2604913
 $verPowerCLIWhereDllMoved = [System.Version]"6.5.0.2604913"
 
-$oModuleInfo = Get-Module -ListAvailable -Name VMware.VimAutomation.Core
+## the module info for the latest version available on this machine (expecting that person is loading the most recent version)
+$oModuleInfo = Get-Module -ListAvailable -Name VMware.VimAutomation.Core | Sort-Object -Property Version | Select-Object -Last 1
 ## the directory in which the VMware.Vim.dll file resides, based on module version
 $strVMwareVimDllDirectory = if ($oModuleInfo.Version -ge $verPowerCLIWhereDllMoved) {$oModuleInfo.ModuleBase} else {(Get-Item (Get-Module VMware.VimAutomation.Core).ModuleBase).Parent.Parent.FullName}
 ## the full filespec of the DLL
