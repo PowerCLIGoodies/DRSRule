@@ -5,7 +5,7 @@
     2) there are one or more existing DRS items of each type to test (VMGroup, VMHostGroup, etc.) in the specified cluster
 
     .Example
-    Invoke-Pester -Script @{Path = '\\some\path\DRSRule\testing\DRSRule.Tests_Get_Unit.ps1'; Parameters = @{Cluster = "myFavoriteCluster"}}
+    Invoke-Pester -Script @{Path = '\\some\path\DRSRule\testing\DRSRule.Tests_Get.ps1'; Parameters = @{Cluster = "myFavoriteCluster"}}
     Invokes the tests in said Tests script, passing the given Cluster parameter value, to be used for the cluster-specific tests
 #>
 param (
