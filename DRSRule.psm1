@@ -1084,8 +1084,8 @@ function Set-DrsVMGroup {
 
         ## if all VMs were specified to be remove from the group (if the $groupSpec.Info.VM value is $null), write warning and take no further action (may not be supported by vSphere API, seemingly; trying to do so via GUI returns message to the effect of, "Cannot remove all members of group")
         if ($null -eq $groupSpec.Info.VM) {Write-Warning "Removing all VMs from VMGroup not supported. Taking no action"}
-        ## if the VM list is the same between the existing VMGroup and the new ClusterGroupSpec, do not bother calling ReconfigureComputeResource() method
-        elseif ($null -eq (Compare-Object -ReferenceObject $arrOriginalVMIDsInTarget -DifferenceObject $groupSpec.Info.VM)) {
+        ## if the VMGroup had any VMs in it already, and the VM list is the same between the existing VMGroup and the new ClusterGroupSpec, do not bother calling ReconfigureComputeResource() method
+        elseif (($null -ne $arrOriginalVMIDsInTarget) -and $null -eq (Compare-Object -ReferenceObject $arrOriginalVMIDsInTarget -DifferenceObject $groupSpec.Info.VM)) {
             Write-Verbose "Not changing VMGroup (no new members added, and no members to remove)"
         } ## end if
         else {

@@ -15,3 +15,4 @@
 - update `Get-Drs*` behavior to match standard `Get-*` cmdlets' behavior of returning error when no item found of given name when `$Name` has no wildcard:
 	- `Get-DrsVMGroup bogusGroupName` should throw error
 - add function to get objects from exported JSON, to essentially return info items that could be used for `New-Drs*`, but that would be useful to see what items are stored in given JSON
+- maybe (if only for the sake of thoroughness):  look into addressing potential issues that might arise from `Compare-Object` calls where a reference- or difference object might be $null (which would cause `Compare-Object` to throw an error) -- an example of where this was fixed:  `Set-DrsVMGroup`; may be minimal chance of hitting bug, as DRS VM/VMHost groups should generally have members, but may be worth a look throughout rest of code

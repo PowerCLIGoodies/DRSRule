@@ -4,6 +4,7 @@
 
 ### v1.2.1
 Apr 2018
+- \[bugfix] fixed [Issue #12](https://github.com/PowerCLIGoodies/DRSRule/issues/12), "Error at addition in empty group the VM list" -- can now add a VM to a DrsVMGroup that has no VM members to start, for whatever reason (VM atrophy, maybe?)
 - \[bugfix] fixed [Issue #15](https://github.com/PowerCLIGoodies/DRSRule/issues/15), "Metadata file VMware.Vim.dll could not be found" -- now loads items properly for VMware PowerCLI version 10 as well, and on Windows PowerShell and PowerShell Core.
 
 ### v1.2.0
