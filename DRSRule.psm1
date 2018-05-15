@@ -504,7 +504,7 @@ Function New-DrsVMGroup {
             ## limit scope to this cluster
             $oThisCluster | Get-VM -Name $oThisVmItem -ErrorAction:Stop
           }
-          catch {Throw "No VM of name '$oThisVmItem' found in cluster '$($oThisCluster.Name)'. Valid VM name?"}
+          catch {Write-Warning "No VM of name '$oThisVmItem' found in cluster '$($oThisCluster.Name)'. Valid VM name?"; Throw $_}
         }
         else {
           $oThisVmItem
@@ -578,7 +578,7 @@ Function New-DrsVMHostGroup {
             ## limit scope to this cluster
             $oThisCluster | Get-VMHost -Name $oThisVMHostItem -ErrorAction:Stop
           }
-          catch {Throw "No VMHost of name '$oThisVMHostItem' found in cluster '$($oThisCluster.Name)'. Valid VMHost name?"}
+          catch {Write-Warning "No VMHost of name '$oThisVMHostItem' found in cluster '$($oThisCluster.Name)'. Valid VMHost name?"; Throw $_}
         }
         else {
           $oThisVMHostItem
@@ -751,7 +751,7 @@ Function New-DrsVMToVMRule {
             ## limit scope to this cluster
             $oThisCluster | Get-VM -Name $oThisVmItem -ErrorAction:Stop
           }
-          catch {Throw "No VM of name '$oThisVmItem' found in cluster '$($oThisCluster.Name)'. Valid VM name?"}
+          catch {Write-Warning "No VM of name '$oThisVmItem' found in cluster '$($oThisCluster.Name)'. Valid VM name?"; Throw $_}
         }
         else {
           $oThisVmItem
@@ -1039,7 +1039,7 @@ function Set-DrsVMGroup {
             ## limit scope to this cluster
             $oThisCluster | Get-VM -Name $oThisVmItem -ErrorAction:Stop
           }
-          catch {Throw "No VM of name '$oThisVmItem' found in cluster '$($oThisCluster.Name)'. Valid VM name?"}
+          catch {Write-Warning "No VM of name '$oThisVmItem' found in cluster '$($oThisCluster.Name)'. Valid VM name?"; Throw $_}
         }
         else {
           $oThisVmItem
@@ -1193,7 +1193,7 @@ function Set-DrsVMHostGroup {
             ## limit scope to this cluster
             $oThisCluster | Get-VMHost -Name $oThisVMHostItem -ErrorAction:Stop
           }
-          catch {Throw "No VMHost of name '$oThisVMHostItem' found in cluster '$($oThisCluster.Name)'. Valid VMHost name?"}
+          catch {Write-Warning "No VMHost of name '$oThisVMHostItem' found in cluster '$($oThisCluster.Name)'. Valid VMHost name?"; Throw $_}
         }
         else {
           $oThisVMHostItem
@@ -1404,7 +1404,7 @@ Function Set-DrsVMToVMRule {
               ## limit scope to this cluster
               $oThisCluster | Get-VM -Name $oThisVMItem -ErrorAction:Stop
             }
-            catch {Throw "No VM of name '$oThisVMItem' found in cluster '$($oThisCluster.Name)'. Valid VM name?"}
+            catch {Write-Warning "No VM of name '$oThisVMItem' found in cluster '$($oThisCluster.Name)'. Valid VM name?"; Throw $_}
           }
           else {
             $oThisVMItem
