@@ -88,7 +88,7 @@
 	PrivateData = @{
 	    PSData = @{
 	        # Tags applied to this module. These help with module discovery in online galleries.
-	        Tags = 'DRS', 'DRSRule', 'VMware DRS', 'VMGroup', 'VMHostGroup', 'VMToVMRule', 'VMToVMHostRule', 'PowerCLIGoodies'
+	        Tags = 'DRS', 'DRSRule', 'VMwareDRS', 'VMGroup', 'VMHostGroup', 'VMToVMRule', 'VMToVMHostRule', 'PowerCLIGoodies'
 
 	        # A URL to the license for this module.
 	        LicenseUri = 'https://github.com/PowerCLIGoodies/DRSRule/blob/master/MITLicense.txt'
