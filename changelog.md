@@ -2,6 +2,12 @@
 
 ### Changelog
 
+### v1.2.1
+Jul 2018
+- \[bugfix] fixed [Issue #8](https://github.com/PowerCLIGoodies/DRSRule/issues/8), "Errors not throwing actual errort" -- now throwing the actual errors, for better debugging capabilities (if ever a bug arises again)
+- \[bugfix] fixed [Issue #12](https://github.com/PowerCLIGoodies/DRSRule/issues/12), "Error at addition in empty group the VM list" -- can now add a VM to a DrsVMGroup that has no VM members to start, for whatever reason (VM atrophy, maybe?)
+- \[bugfix] fixed [Issue #15](https://github.com/PowerCLIGoodies/DRSRule/issues/15), "Metadata file VMware.Vim.dll could not be found" -- now loads items properly for VMware PowerCLI version 10 as well, and on Windows PowerShell and PowerShell Core.
+
 ### v1.2.0
 25 May 2017
 - \[enhancement] per [Issue #2](https://github.com/PowerCLIGoodies/DRSRule/issues/2), added ability to remove one or more target items from a DRS VMGroup or VMHost group via `Set-DrsVMGroup`, `Set-DrsVMHostGroup`

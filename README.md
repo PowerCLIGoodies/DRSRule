@@ -9,7 +9,12 @@ A couple of examples:
 - Export rule/group info:  `Export-DrsRule -Path c:\someFolder\myDrsRuleAndGroupInfo.json`
 - Import rule/group info:  `Import-DrsRule -Path c:\someFolder\myDrsRuleAndGroupInfo.json`
 
-### How to set up the DRSRule module for use
+### How to set up the DRSRule module for use:
+Via the PowerShell Gallery and PowerShellGet:
+* \[optional, but smart] Save the module and inspect (safety first!): `Find-Module DRSRule | Save-Module -Path c:\temp\someFolder`
+* Once comfortable with the safety of the module: `Find-Module DRSRule | Install-Module`
+
+Or, the "old", manual way:
 * Download and extract the module .zip file
 * `Unblock-File` on the extracted contents
 * `Import-Module <path\To\ModuleFolder>`
