@@ -1,6 +1,12 @@
 ## DRSRule PowerShell module
 
 ### Changelog
+### v2.0.0
+- \[enhancement] Restructure repository, putting module components into DRSRule subdirectory, which represents just the items required for the actual module. Rest of items at top-level of repository are supporting/meta items for the module, but not used within the module itself
+- \[enhancement] Add `Update-ThisModuleManifest.ps1` for ease of module maintenance for all those module contributors out there
+- \[enhancement] Rewrite types in native PowerShell Classes. This allows us to avoid the somewhat cludgey and often problematic DLL-reference-hell. A couple of things to note (*breaking changes!*):
+  - This increases the minimum PowerShell version to 5.0 from the previous 4.0 requirement
+  - The classes are no longer in a namespace, `DRSRule`, but are "top-level" (due to the way that native PowerShell are implemented). So, classes in the module go from `DRSRule.VMGroup` in pre-v2 to `DRSRule_VMGroup` in this module version
 
 ### v1.2.1
 Jul 2018
