@@ -69,12 +69,12 @@ FormatsToProcess = 'DRSRule.format.ps1xml'
 NestedModules = @('DRSRuleUtil')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Get-DrsVMGroup', 'Get-DrsVMHostGroup', 'Get-DrsVMToVMHostRule', 
-               'Get-DrsVMToVMRule', 'New-DrsVMGroup', 'New-DrsVMHostGroup', 
-               'New-DrsVMToVMHostRule', 'New-DrsVMToVMRule', 'Remove-DrsVMGroup', 
-               'Remove-DrsVMHostGroup', 'Remove-DrsVMToVMHostRule', 
-               'Remove-DrsVMToVMRule', 'Set-DrsVMGroup', 'Set-DrsVMHostGroup', 
-               'Set-DrsVMToVMHostRule', 'Set-DrsVMToVMRule', 'Import-DrsRule', 
+FunctionsToExport = 'Get-DrsVMGroup', 'Get-DrsVMHostGroup', 'Get-DrsVMToVMHostRule',
+               'Get-DrsVMToVMRule', 'New-DrsVMGroup', 'New-DrsVMHostGroup',
+               'New-DrsVMToVMHostRule', 'New-DrsVMToVMRule', 'Remove-DrsVMGroup',
+               'Remove-DrsVMHostGroup', 'Remove-DrsVMToVMHostRule',
+               'Remove-DrsVMToVMRule', 'Set-DrsVMGroup', 'Set-DrsVMHostGroup',
+               'Set-DrsVMToVMHostRule', 'Set-DrsVMToVMRule', 'Import-DrsRule',
                'Export-DrsRule'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -93,8 +93,8 @@ AliasesToExport = '*'
 # ModuleList = @()
 
 # List of all files packaged with this module
-FileList = 'DRSRule.psd1', 'DRSRule.psm1', 'en-US\about_DRSRule.help.txt', 
-               'DRSRule.format.ps1xml', 'DRSRule.Help.xml', 'DRSRule.init.ps1', 
+FileList = 'DRSRule.psd1', 'DRSRule.psm1', 'en-US\about_DRSRule.help.txt',
+               'DRSRule.format.ps1xml', 'DRSRule.Help.xml', 'DRSRule.init.ps1',
                'DRSRuleUtil.psd1', 'DRSRuleUtil.psm1'
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
@@ -103,7 +103,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'DRS', 'DRSRule', 'VMwareDRS', 'VMGroup', 'VMHostGroup', 'VMToVMRule', 
+        Tags = 'DRS', 'DRSRule', 'VMwareDRS', 'VMGroup', 'VMHostGroup', 'VMToVMRule',
                'VMToVMHostRule', 'PowerCLIGoodies'
 
         # A URL to the license for this module.

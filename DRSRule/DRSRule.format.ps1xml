@@ -3,7 +3,7 @@
 	<ViewDefinitions>
 		<View>
 			<Name>DRSRule_VMGroup</Name>
-			<ViewSelectedBy><TypeName>DRSRule.VMGroup</TypeName></ViewSelectedBy>
+			<ViewSelectedBy><TypeName>DRSRule_VMGroup</TypeName></ViewSelectedBy>
 			<TableControl>
 				<TableHeaders>
 					<TableColumnHeader><Width>24</Width></TableColumnHeader>
@@ -25,7 +25,7 @@
 		</View>
 		<View>
 			<Name>DRSRule_VMHostGroup</Name>
-			<ViewSelectedBy><TypeName>DRSRule.VMHostGroup</TypeName></ViewSelectedBy>
+			<ViewSelectedBy><TypeName>DRSRule_VMHostGroup</TypeName></ViewSelectedBy>
 			<TableControl>
 				<TableHeaders>
 					<TableColumnHeader><Width>24</Width></TableColumnHeader>
@@ -47,7 +47,7 @@
 		</View>
 		<View>
 			<Name>DRSRule_VMToVMRule</Name>
-			<ViewSelectedBy><TypeName>DRSRule.VMToVMRule</TypeName></ViewSelectedBy>
+			<ViewSelectedBy><TypeName>DRSRule_VMToVMRule</TypeName></ViewSelectedBy>
 			<TableControl>
 				<TableHeaders>
 					<TableColumnHeader><Width>24</Width></TableColumnHeader>
@@ -73,7 +73,7 @@
 		</View>
 		<View>
 			<Name>DRSRule_VMToVMHostRuleInfo</Name>
-			<ViewSelectedBy><TypeName>DRSRule.VMToVMHostRule</TypeName></ViewSelectedBy>
+			<ViewSelectedBy><TypeName>DRSRule_VMToVMHostRule</TypeName></ViewSelectedBy>
 			<TableControl>
 				<TableHeaders>
 					<TableColumnHeader><Width>24</Width></TableColumnHeader>

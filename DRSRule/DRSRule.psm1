@@ -42,7 +42,7 @@
     Gets a DRS VMGroup by the related VM object. Returns the VMGroup(s) of which a VM is a part, if any
 
     .Outputs
-    If corrsponding DRS VMGroup(s) found, either DRSRule.VMGroup in "normal" mode, or VMware.Vim.ClusterVmGroup in "-ReturnRaw" mode. Else, $null
+    If corrsponding DRS VMGroup(s) found, either DRSRule_VMGroup in "normal" mode, or VMware.Vim.ClusterVmGroup in "-ReturnRaw" mode. Else, $null
 
     .Link
     https://github.com/PowerCLIGoodies/DRSRule
@@ -52,7 +52,7 @@
 #>
 function Get-DrsVMGroup {
   [CmdletBinding(DefaultParameterSetName = "ByName")]
-  [OutputType([DRSRule.VMGroup],[VMware.Vim.ClusterVmGroup])]
+  [OutputType([DRSRule_VMGroup],[VMware.Vim.ClusterVmGroup])]
   param(
     ## Name of DRS VM Group to get (or, all if no name specified)
     [Parameter(Position = 0, ParameterSetName="ByName")]
@@ -89,7 +89,7 @@ function Get-DrsVMGroup {
       ForEach-Object -Process {
         if ($true -eq $ReturnRawGroup) {return $_}
         else {
-          New-Object -TypeName DRSRule.VMGroup -Property @{
+          New-Object -TypeName DRSRule_VMGroup -Property @{
             Name        = $_.Name
             ## updated to use $oThisCluster, instead of $Cluster, which would get all cluster names if more than one cluster
             Cluster     = $oThisCluster.Name
@@ -154,7 +154,7 @@ function Get-DrsVMGroup {
     Gets a DRS VMHostGroup by the related VMHost object. Returns the VMHostGroup(s) of which a VMHost is a part, if any
 
     .Outputs
-    If corrsponding DRS VMHostGroup(s) found, either DRSRule.VMHostGroup in "normal" mode, or VMware.Vim.ClusterHostGroup in "-ReturnRaw" mode. Else, $null
+    If corrsponding DRS VMHostGroup(s) found, either DRSRule_VMHostGroup in "normal" mode, or VMware.Vim.ClusterHostGroup in "-ReturnRaw" mode. Else, $null
 
     .Link
     https://github.com/PowerCLIGoodies/DRSRule
@@ -164,7 +164,7 @@ function Get-DrsVMGroup {
 #>
 function Get-DrsVMHostGroup {
   [CmdletBinding(DefaultParameterSetName = "ByName")]
-  [OutputType([DRSRule.VMHostGroup],[VMware.Vim.ClusterHostGroup])]
+  [OutputType([DRSRule_VMHostGroup],[VMware.Vim.ClusterHostGroup])]
   param(
     ## Name of DRS VMHost Group to get (or, all if no name specified)
     [Parameter(Position = 0, ParameterSetName="ByName")]
@@ -202,7 +202,7 @@ function Get-DrsVMHostGroup {
       ForEach-Object -Process {
         if ($true -eq $ReturnRawGroup) {return $_}
         else {
-          New-Object DRSRule.VMHostGroup -Property @{
+          New-Object DRSRule_VMHostGroup -Property @{
             Name        = $_.Name
             Cluster     = $oThisCluster.Name
             VMHost      = $(
@@ -258,7 +258,7 @@ function Get-DrsVMHostGroup {
     Returns all DRS VM to VM rules involving the specified VM, "VM3"
 
     .Outputs
-    DRSRule.VMToVMRule object with information about the given DRS VM to VM rule, or a raw vSphere object of on of the types VMware.Vim.ClusterAffinityRuleSpec or VMware.Vim.ClusterAntiAffinityRuleSpec, depending on if the rule is affinity or anti-affinity
+    DRSRule_VMToVMRule object with information about the given DRS VM to VM rule, or a raw vSphere object of on of the types VMware.Vim.ClusterAffinityRuleSpec or VMware.Vim.ClusterAntiAffinityRuleSpec, depending on if the rule is affinity or anti-affinity
 
     .Link
     https://github.com/PowerCLIGoodies/DRSRule
@@ -268,7 +268,7 @@ function Get-DrsVMHostGroup {
 #>
 function Get-DrsVMToVMRule {
   [CmdletBinding(DefaultParameterSetName = "ByName")]
-  [OutputType([DRSRule.VMToVMRule],[VMware.Vim.ClusterAffinityRuleSpec],[VMware.Vim.ClusterAntiAffinityRuleSpec])]
+  [OutputType([DRSRule_VMToVMRule],[VMware.Vim.ClusterAffinityRuleSpec],[VMware.Vim.ClusterAntiAffinityRuleSpec])]
   param(
     ## Name of DRS VM-to-VMHost rule to get (or, all if no name specified)
     [Parameter(Position = 0, ParameterSetName="ByName")]
@@ -305,7 +305,7 @@ function Get-DrsVMToVMRule {
       ForEach-Object -Process {
         if ($ReturnRawRule) {$_}
         else{
-          New-Object DRSRule.VMToVMRule -Property @{
+          New-Object DRSRule_VMToVMRule -Property @{
             Name         = $_.Name
             Cluster      = $oThisCluster.Name
             ClusterId    = $oThisCluster.Id
@@ -375,7 +375,7 @@ function Get-DrsVMToVMRule {
     Returns all DRS VM to VMHost rules in the cluster of which VMHost "myhost0.dom.com" is a part, and that involve a DRS VMHostGroup of which "myhost0.dom.com" is a member (either as the Affine or AntiAffine VMHost group)
 
     .Outputs
-    DRSRule.VMToVMHostRule bject with information about the given DRS VM to VMHost rule, or a "raw" VMware.Vim.ClusterVmHostRuleInfo vSphere object
+    DRSRule_VMToVMHostRule bject with information about the given DRS VM to VMHost rule, or a "raw" VMware.Vim.ClusterVmHostRuleInfo vSphere object
 
     .Link
     https://github.com/PowerCLIGoodies/DRSRule
@@ -385,7 +385,7 @@ function Get-DrsVMToVMRule {
 #>
 function Get-DrsVMToVMHostRule {
   [CmdletBinding(DefaultParameterSetName = "ByName")]
-  [OutputType([DRSRule.VMToVMHostRule],[VMware.Vim.ClusterVmHostRuleInfo])]
+  [OutputType([DRSRule_VMToVMHostRule],[VMware.Vim.ClusterVmHostRuleInfo])]
   param(
     ## Name of DRS VM affinity/antiaffinity rule to get (or, all if no name specified)
     [Parameter(Position = 0, ParameterSetName="ByName")]
@@ -437,7 +437,7 @@ function Get-DrsVMToVMHostRule {
       ForEach-Object -Process {
         if ($ReturnRawRule) {$_}
         else {
-          New-Object DRSRule.VMToVMHostRule -Property @{
+          New-Object DRSRule_VMToVMHostRule -Property @{
             Name                    = $_.Name
             Cluster                 = $oThisCluster.Name
             ClusterId               = $oThisCluster.Id
@@ -458,7 +458,7 @@ function Get-DrsVMToVMHostRule {
 #.ExternalHelp DRSRule.Help.xml
 Function New-DrsVMGroup {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium)]
-  [OutputType([DRSRule.VMGroup])]
+  [OutputType([DRSRule_VMGroup])]
   param(
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
     [ValidateNotNullOrEmpty()]
@@ -533,7 +533,7 @@ Function New-DrsVMGroup {
 #.ExternalHelp DRSRule.Help.xml
 Function New-DrsVMHostGroup {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium)]
-  [OutputType([DRSRule.VMHostGroup])]
+  [OutputType([DRSRule_VMHostGroup])]
   param(
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
     [ValidateNotNullOrEmpty()]
@@ -607,7 +607,7 @@ Function New-DrsVMHostGroup {
 #.ExternalHelp DRSRule.Help.xml
 Function New-DrsVMToVMHostRule {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium)]
-  [OutputType([DRSRule.VMToVMHostRule])]
+  [OutputType([DRSRule_VMToVMHostRule])]
   param(
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
     [ValidateNotNullOrEmpty()]
@@ -695,7 +695,7 @@ Function New-DrsVMToVMHostRule {
 #.ExternalHelp DRSRule.Help.xml
 Function New-DrsVMToVMRule {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium)]
-  [OutputType([DRSRule.VMToVMRule])]
+  [OutputType([DRSRule_VMToVMRule])]
   param(
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
     [ValidateNotNullOrEmpty()]
@@ -971,7 +971,7 @@ Function Remove-DrsVMToVMRule {
     VM Group 1         Cluster1        False              {VM3,VM4}
 
     .Outputs
-    DRSRule.VMGroup object with information about the updated DRS VM group
+    DRSRule_VMGroup object with information about the updated DRS VM group
 
     .Link
     https://github.com/PowerCLIGoodies/DRSRule
@@ -981,7 +981,7 @@ Function Remove-DrsVMToVMRule {
 #>
 function Set-DrsVMGroup {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium, DefaultParameterSetName = "ByVMParam")]
-  [OutputType([DRSRule.VMGroup])]
+  [OutputType([DRSRule_VMGroup])]
   param (
     ## The name of the DRS VM group to modify
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
@@ -1126,7 +1126,7 @@ function Set-DrsVMGroup {
     My ESX             Cluster1        True               {esx3,esx4}
 
     .Outputs
-    DRSRule.VMHostGroup object with information about the updated DRS VMHost group
+    DRSRule_VMHostGroup object with information about the updated DRS VMHost group
 
     .Link
     https://github.com/PowerCLIGoodies/DRSRule
@@ -1136,7 +1136,7 @@ function Set-DrsVMGroup {
 #>
 function Set-DrsVMHostGroup {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium, DefaultParameterSetName = "ByVMHostParam")]
-  [OutputType([DRSRule.VMHostGroup])]
+  [OutputType([DRSRule_VMHostGroup])]
   param (
     ## The name of the DRS VMHost group to modify
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
@@ -1262,7 +1262,7 @@ function Set-DrsVMHostGroup {
 #.ExternalHelp DRSRule.Help.xml
 Function Set-DrsVMToVMHostRule {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium)]
-  [OutputType([DRSRule.VMToVMHostRule])]
+  [OutputType([DRSRule_VMToVMHostRule])]
   param(
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
     [ValidateNotNullOrEmpty()]
@@ -1363,7 +1363,7 @@ Function Set-DrsVMToVMHostRule {
 #.ExternalHelp DRSRule.Help.xml
 Function Set-DrsVMToVMRule {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = [System.Management.Automation.Confirmimpact]::Medium)]
-  [OutputType([DRSRule.VMToVMRule])]
+  [OutputType([DRSRule_VMToVMRule])]
   param(
     [Parameter(Mandatory = $True, Position = 0, ValueFromPipelineByPropertyName=$True)]
     [ValidateNotNullOrEmpty()]
@@ -1520,10 +1520,10 @@ Function Export-DrsRule {
   }
 }
 
-#.ExternalHelp DRSRule.Help.xml
+#.ExternalHelp DRSRule_Help.xml
 Function Import-DrsRule {
   [CmdletBinding(SupportsShouldProcess=$true)]
-  [OutputType([DRSRule.VMGroup],[DRSRule.VMHostGroup],[DRSRule.VMToVMRule],[DRSRule.VMToVMHostRule])]
+  [OutputType([DRSRule_VMGroup],[DRSRule_VMHostGroup],[DRSRule_VMToVMRule],[DRSRule_VMToVMHostRule])]
   param(
     [Parameter(Position = 0)]
     [ValidateNotNullOrEmpty()]
