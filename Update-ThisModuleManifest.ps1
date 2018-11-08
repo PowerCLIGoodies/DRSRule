@@ -24,7 +24,7 @@ begin {
 		FileList = Write-Output "${strModuleName}.psd1" "${strModuleName}.psm1" "en-US\about_${strModuleName}.help.txt" "${strModuleName}.format.ps1xml" "${strModuleName}.Help.xml" "${strModuleName}.init.ps1" "${strModuleName}Util.psd1" "${strModuleName}Util.psm1"
 		FormatsToProcess = "${strModuleName}.format.ps1xml"
 		FunctionsToExport = Write-Output Get-DrsVMGroup Get-DrsVMHostGroup Get-DrsVMToVMHostRule Get-DrsVMToVMRule New-DrsVMGroup New-DrsVMHostGroup New-DrsVMToVMHostRule New-DrsVMToVMRule Remove-DrsVMGroup Remove-DrsVMHostGroup Remove-DrsVMToVMHostRule Remove-DrsVMToVMRule Set-DrsVMGroup Set-DrsVMHostGroup Set-DrsVMToVMHostRule Set-DrsVMToVMRule Import-DrsRule Export-DrsRule
-		# IconUri = "https://avatars0.githubusercontent.com/u/something"
+		IconUri = "https://avatars2.githubusercontent.com/u/10615837"
 		LicenseUri = "https://github.com/PowerCLIGoodies/DRSRule/blob/master/MITLicense.txt"
 		NestedModules = Write-Output "${strModuleName}Util"
 		PowerShellVersion = [System.Version]"5.0"
