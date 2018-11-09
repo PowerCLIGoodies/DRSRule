@@ -7,6 +7,8 @@
 - \[enhancement] Rewrite types in native PowerShell Classes. This allows us to avoid the somewhat cludgey and often problematic DLL-reference-hell. A couple of things to note (*breaking changes!*):
   - This increases the minimum PowerShell version to 5.0 from the previous 4.0 requirement
   - The classes are no longer in a namespace, `DRSRule`, but are "top-level" (due to the way that native PowerShell are implemented). So, class names in the module go from `DRSRule.VMGroup` in pre-v2 to `DRSRule_VMGroup` in this module version, for example
+- \[enhancement] [WIP] Add argument completers to parameters, maximizing ease of use!
+- \[enhancement] [WIP] Add Pester tests for rest of the cmdlets (beyond just the `Get-` cmdlets) -- go-o-o-o, good testing!
 
 ### v1.2.1
 Jul 2018
