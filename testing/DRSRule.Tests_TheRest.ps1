@@ -107,6 +107,45 @@ Describe -Name "New-, Set-, Remove- DRSRule Items" {
     } ## end context
 
 
+    Context -Name "Set DrsVMHostGroup" -Fixture {
+        It -Name "Sets a DrsVMHostGroup VMHost members (adds a VMHost via -AddVMHost parameter, and with a VMHost object)" -Test {
+            $intNumGroupMemberBeforeAdd = $($oTmpGroup = $script:hshTemporaryItemsToDelete["DrsVMHostGroup"] | Select-Object -First 1; (Get-DrsVMHostGroup -Name $oTmpGroup.Name -Cluster $oTmpGroup.Cluster).VMHost.Count)
+            $oVMHostToAdd = $oClusterToUse | Get-VMHost | Where-Object {$_.Name -notin $oTmpGroup.VMHost} | Get-Random
+            $oTmpGroup_afterAdd = $script:hshTemporaryItemsToDelete["DrsVMHostGroup"] | Select-Object -First 1 | Set-DrsVMHostGroup -AddVMHost $oVMHostToAdd
+            $intNumGroupMemberAfterAdd = $oTmpGroup_afterAdd.VMHost.Count
+            $bAddsVMHostGroupMember = (($intNumGroupMemberAfterAdd - $intNumGroupMemberBeforeAdd) -eq 1) -and ($oTmpGroup_afterAdd.VMHost -contains $oVMHostToAdd.Name)
+            $bAddsVMHostGroupMember | Should Be $true
+        } ## end it
+
+        It -Name "Sets a DrsVMHostGroup VMHost members (removes a VMHost via -RemoveVMHost parameter, and with a VMHost by name)" -Test {
+            $intNumGroupMemberBeforeRemove = $($oTmpGroup = $script:hshTemporaryItemsToDelete["DrsVMHostGroup"] | Select-Object -First 1; ($oTmpGroup = Get-DrsVMHostGroup -Name $oTmpGroup.Name -Cluster $oTmpGroup.Cluster).VMHost.Count)
+            $strVMHostNameToRemove = $oTmpGroup.VMHost | Get-Random
+            $oTmpGroup_afterRemove = $oTmpGroup | Set-DrsVMHostGroup -RemoveVMHost $strVMHostNameToRemove
+            $intNumGroupMemberAfterRemove = $oTmpGroup_afterRemove.VMHost.Count
+            ## is the count less by 1, and is the name of the supposedly removed group member no long in the updated group?
+            $bAddsVMHostGroupMember = (($intNumGroupMemberBeforeRemove - $intNumGroupMemberAfterRemove) -eq 1) -and ($strVMHostNameToRemove -notin $oTmpGroup_afterRemove.VMHost)
+            $bAddsVMHostGroupMember | Should Be $true
+        } ## end it
+
+        It -Name "Sets a DrsVMHostGroup VMHost members (adds a VMHost via -Append and -VMHost parameters, and with a VMHost object)" -Test {
+            $intNumGroupMemberBeforeAdd = $($oTmpGroup = $script:hshTemporaryItemsToDelete["DrsVMHostGroup"] | Select-Object -First 1; ($oTmpGroup = Get-DrsVMHostGroup -Name $oTmpGroup.Name -Cluster $oTmpGroup.Cluster).VMHost.Count)
+            $oVMHostToAdd = $oClusterToUse | Get-VMHost | Where-Object {$_.Name -notin $oTmpGroup.VMHost} | Get-Random
+            $oTmpGroup_afterAdd = $oTmpGroup | Set-DrsVMHostGroup -VMHost $oVMHostToAdd -Append
+            $intNumGroupMemberAfterAdd = $oTmpGroup_afterAdd.VMHost.Count
+            $bAddsVMHostGroupMember = (($intNumGroupMemberAfterAdd - $intNumGroupMemberBeforeAdd) -eq 1) -and ($oTmpGroup_afterAdd.VMHost -contains $oVMHostToAdd.Name)
+            $bAddsVMHostGroupMember | Should Be $true
+        } ## end it
+
+        It -Name "Sets a DrsVMHostGroup VMHost members (Sets explicit member list via just -VMHost parameter, and with a VMHost by name)" -Test {
+            $oTmpGroup = $script:hshTemporaryItemsToDelete["DrsVMHostGroup"] | Select-Object -First 1; $oTmpGroup = Get-DrsVMHostGroup -Name $oTmpGroup.Name -Cluster $oTmpGroup.Cluster
+            $oVMHostForSet = $oClusterToUse | Get-VMHost | Get-Random
+            $oTmpGroup_afterSet = $oTmpGroup | Set-DrsVMHostGroup -VMHost $oVMHostForSet.Name
+            $bSetsExplicitVMHostGroupMember = ($oTmpGroup_afterSet.VMHost.Count -eq 1) -and ($oTmpGroup_afterSet.VMHost -eq $oVMHostForSet.Name)
+            $bSetsExplicitVMHostGroupMember | Should Be $true
+        } ## end it
+    } ## end context
+
+
     Context -Name "Remove DrsVMGroup" -Fixture {
         It -Name "Removes DrsVMGroup (which was created for this testing)" -Test {
             $arrTemporaryDrsGroupNames = $script:hshTemporaryItemsToDelete["DrsVMGroup"].Name
