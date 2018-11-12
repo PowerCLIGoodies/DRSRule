@@ -318,7 +318,7 @@ function Get-DrsVMToVMRule {
             VMId        = $_.VM
             UserCreated = [Boolean]$_.UserCreated
             Type        = $_.GetType().Name
-#            Mandatory   = [Boolean]$_.Mandatory
+            Mandatory   = [Boolean]$_.Mandatory
           }
         }
       }
@@ -712,9 +712,9 @@ Function New-DrsVMToVMRule {
     [ValidateNotNullOrEmpty()]
     [switch]${Enabled},
 
-#    [Parameter(ValueFromPipelineByPropertyName=$True)]
-#    [ValidateNotNullOrEmpty()]
-#    [switch]${Mandatory},
+   [Parameter(ValueFromPipelineByPropertyName=$True)]
+   [ValidateNotNullOrEmpty()]
+   [switch]${Mandatory},
     [Parameter(ValueFromPipelineByPropertyName=$True)]
     [ValidateNotNullOrEmpty()]
     [switch]${KeepTogether},
@@ -766,7 +766,7 @@ Function New-DrsVMToVMRule {
         )
         $newRule.Name        = ${Name}
         $newRule.Enabled     = [Boolean]${Enabled}
-#        $newRule.Mandatory   = [Boolean]${Mandatory}
+        $newRule.Mandatory   = [Boolean]${Mandatory}
         $newRule.UserCreated = $True
         $newRule.Vm          = $VM | Foreach-Object {$_.Id}
         $ruleSpec            = New-Object VMware.Vim.ClusterRuleSpec

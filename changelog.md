@@ -9,6 +9,7 @@
   - The classes are no longer in a namespace, `DRSRule`, but are "top-level" (due to the way that native PowerShell are implemented). So, class names in the module go from `DRSRule.VMGroup` in pre-v2 to `DRSRule_VMGroup` in this module version, for example
 - \[enhancement] [WIP] Add argument completers to parameters, maximizing ease of use!
 - \[enhancement] [WIP] Add Pester tests for rest of the cmdlets (beyond just the `Get-` cmdlets) -- go-o-o-o, good testing!
+- \[bugfix] Add `-Mandatory` parameter to `New-DrsVMtoVMRule`. Had been in code since v1.0, but commented out (found no reason for it being commented out). Also, `Get-DrsVMToVMRule` was not properly reporting `Mandatory` property on corresponding objects. Corrected that, now
 
 ### v1.2.1
 Jul 2018
