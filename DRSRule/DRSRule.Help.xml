@@ -2290,7 +2290,7 @@ Performing the operation "Remove DRS rule 'testVmToVmRule1'" on target "Cluster0
 		<command:details>
 			<command:name>Set-DrsVMToVMHostRule</command:name>
 			<maml:description>
-				<maml:para>This cmdlet changes a DRS VM to VMHost rule.</maml:para>
+				<maml:para>Changes a DRS VM to VMHost rule</maml:para>
 			</maml:description>
 			<maml:copyright>
 				<maml:para />
@@ -2300,7 +2300,7 @@ Performing the operation "Remove DRS rule 'testVmToVmRule1'" on target "Cluster0
 			<dev:version />
 		</command:details>
 		<maml:description>
-			<maml:para>This cmdlet changes a DRS VM to VMHost rule with the provided parameters.</maml:para>
+			<maml:para>Changes a DRS VM to VMHost rule with the provided parameters</maml:para>
 		</maml:description>
 		<command:syntax>
 			<command:syntaxItem>
@@ -2329,23 +2329,38 @@ Performing the operation "Remove DRS rule 'testVmToVmRule1'" on target "Cluster0
 				<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 					<maml:name>VMGroup</maml:name>
 					<maml:description>
-						<maml:para>The name of the new DRS VM group to use for this rule. This will replace the current DRS VM group in the rule</maml:para>
+						<maml:para>The name of the DRS VM group to use for this rule. This will replace the current DRS VM group in the rule</maml:para>
 					</maml:description>
 					<command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+					<dev:type>
+						<maml:name />
+						<maml:uri />
+					</dev:type>
+					<dev:defaultValue />
 				</command:parameter>
 				<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 					<maml:name>VMHostGroup</maml:name>
 					<maml:description>
-						<maml:para>The name of the new DRS VMHost group to use for this rule.  This will replace the current DRS VMHost group in the rule</maml:para>
+						<maml:para>The name of the DRS VMHost group to use for this rule.  This will replace the current DRS VMHost group in the rule</maml:para>
 					</maml:description>
 					<command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+					<dev:type>
+						<maml:name />
+						<maml:uri />
+					</dev:type>
+					<dev:defaultValue />
 				</command:parameter>
 				<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 					<maml:name>Mandatory</maml:name>
 					<maml:description>
-						<maml:para>A switch the allows to specify if the DRS VM to VMHost rule is to be changed to a "should" ($false or not specified) or a "must" ($true) rule.</maml:para>
+						<maml:para>A switch to specify if the DRS VM to VMHost rule is to be changed to a "should" ($false or not specified) or a "must" ($true) rule</maml:para>
 					</maml:description>
 					<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+					<dev:type>
+						<maml:name />
+						<maml:uri />
+					</dev:type>
+					<dev:defaultValue />
 				</command:parameter>
 				<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
 					<maml:name>KeepTogether</maml:name>
@@ -2408,10 +2423,10 @@ If the value is $false, the cmdlet runs without asking for user confirmation.</m
 				</dev:type>
 				<dev:defaultValue></dev:defaultValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named">
 				<maml:name>VMGroup</maml:name>
 				<maml:description>
-					<maml:para>The name of the new DRS VM group to use for this rule. This will replace the current DRS VM group in the rule</maml:para>
+					<maml:para>The name of the DRS VM group to use for this rule. This will replace the current DRS VM group in the rule</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
 				<dev:type>
@@ -2420,10 +2435,10 @@ If the value is $false, the cmdlet runs without asking for user confirmation.</m
 				</dev:type>
 				<dev:defaultValue></dev:defaultValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named">
 				<maml:name>VMHostGroup</maml:name>
 				<maml:description>
-					<maml:para>The name of the new DRS VMHost group to use for this rule.  This will replace the current DRS VMHost group in the rule</maml:para>
+					<maml:para>The name of the DRS VMHost group to use for this rule.  This will replace the current DRS VMHost group in the rule</maml:para>
 				</maml:description>
 				<command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
 				<dev:type>
@@ -2432,10 +2447,10 @@ If the value is $false, the cmdlet runs without asking for user confirmation.</m
 				</dev:type>
 				<dev:defaultValue></dev:defaultValue>
 			</command:parameter>
-			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="false" position="named">
+			<command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named">
 				<maml:name>Mandatory</maml:name>
 				<maml:description>
-					<maml:para>A switch the allows to specify if the DRS VM to VMHost rule is to be changed to a "should" ($false or not specified) or a "must" ($true) rule.</maml:para>
+					<maml:para>A switch to specify if the DRS VM to VMHost rule is to be changed to a "should" ($false or not specified) or a "must" ($true) rule</maml:para>
 				</maml:description>
 				<command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
 				<dev:type>
@@ -2518,14 +2533,11 @@ If the value is $false, the cmdlet runs without asking for user confirmation.</m
 			<command:example>
 				<maml:title>--------------------------  Example 1  --------------------------</maml:title>
 				<maml:introduction>
-					<maml:paragraph>PS C:\&gt;</maml:paragraph>
+					<maml:para />
 				</maml:introduction>
 				<dev:code>Set-DrsVMToVMHostRule -Name Rule1 -VMGroup 'My VM' -Cluster Cluster1</dev:code>
 				<dev:remarks>
-					<maml:para>This example changes the DRS VM to VMHost rules, whose name is 'Rule1', on Cluster1. The DRS VM group used in the rule will now be the DRS VM group named 'My VM'</maml:para>
-					<maml:para />
-					<maml:para />
-					<maml:para></maml:para>
+					<maml:para>This example changes the DRS VM to VMHost rule whose name is 'Rule1', and on Cluster1. The DRS VM group used in the rule will now be the DRS VM group named 'My VM'</maml:para>
 				</dev:remarks>
 				<command:commandLines>
 					<command:commandLine>
@@ -2538,15 +2550,15 @@ If the value is $false, the cmdlet runs without asking for user confirmation.</m
 			<command:example>
 				<maml:title>--------------------------  Example 2  --------------------------</maml:title>
 				<maml:introduction>
-					<maml:paragraph>PS C:\&gt;</maml:paragraph>
+					<maml:para />
 				</maml:introduction>
-				<dev:code>Get-Cluster Cluster0 | Get-DrsVMToVMHostRule testVmToHostRule0 | Set-DrsVMToVMHostRule -Enabled -KeepTogether:$false | Format-List *</dev:code>
+				<dev:code>Get-Cluster Cluster0 | Get-DrsVMToVMHostRule testVmToHostRule0 | Set-DrsVMToVMHostRule -Enabled -KeepTogether:$false</dev:code>
 				<dev:remarks>
 					<maml:para>Gets the given cluster and then the DRS VM to VMHost rule "testVmToHostRule0" therein, and then:
     enables the rule
     sets it as an anti-affinity rule, keeping the VMs in the DRS VM group off of the VMHosts in the DRS VMHost group</maml:para>
-					<maml:para />
-					<maml:para />
+					<maml:para></maml:para>
+					<maml:para></maml:para>
 					<maml:para>Name                    : testVmToHostRule0
 Cluster                 : Cluster0
 ClusterId               : ClusterComputeResource-domain-c266
