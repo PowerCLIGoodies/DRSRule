@@ -76,22 +76,6 @@ class DRSRule_VMToVMHostRule {
 } ## end class
 
 
-# ## VM or template name completer
-# $sbGetVmOrTemplateNameCompleter = {
-#     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-#     Get-View -ViewType VirtualMachine -Property Name, Runtime.Powerstate -Filter @{Name = "^${wordToComplete}"; "Config.Template" = ($commandName -ne "Get-VM").ToString()} | Sort-Object -Property Name | Foreach-Object {
-#         New-Object -TypeName System.Management.Automation.CompletionResult -ArgumentList (
-#             $_.Name,    # CompletionText
-#             $_.Name,    # ListItemText
-#             [System.Management.Automation.CompletionResultType]::ParameterValue,    # ResultType
-#             ("{0} ({1})" -f $_.Name, $_.Runtime.PowerState)    # ToolTip
-#         )
-#     } ## end foreach-object
-# } ## end scriptblock
-
-# Register-ArgumentCompleter -CommandName Get-VM, Get-Template -ParameterName Name -ScriptBlock $sbGetVmOrTemplateNameCompleter
-
-
 # multiple DRSRule object item name completer
 $sbGetDRSRuleItemNameCompleter = {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
@@ -148,19 +132,31 @@ $sbGetCoreVSphereItemNameCompleter = {
 
     ## determine the VMware View object type to use to get Name(s) of relevant objects, based on the types of objects that the given $commandName expects; like, the DRS cmdlets take the -Cluster parameter
     $strViewTypeToUseToGetDesiredObjects = Switch ($commandName) {
-        {$_ -in (Write-Output Export-DrsRule, Get-DrsVMGroup, Get-DrsVMToVMRule, Import-DrsRule, New-DrsVMGroup,New-DrsVMToVMHostRule, New-DrsVMToVMRule, Remove-DrsVMGroup, Remove-DrsVMHostGroup, Remove-DrsVMToVMHostRule, Remove-DrsVMToVMRule, Set-DrsVMGroup, Set-DrsVMToVMHostRule, Set-DrsVMToVMRule)} {"ClusterComputeResource"}
+        {$_ -in (Write-Output Export-DrsRule, Import-DrsRule, New-DrsVMToVMHostRule, Remove-DrsVMGroup, Remove-DrsVMHostGroup, Remove-DrsVMToVMHostRule, Remove-DrsVMToVMRule, Set-DrsVMToVMHostRule)} {"ClusterComputeResource"}
         {$_ -in (Write-Output Get-DrsVMHostGroup, Get-DrsVMToVMHostRule, New-DrsVMHostGroup, Set-DrsVMHostGroup)} {
             Switch ($parameterName) {
                 "Cluster" {"ClusterComputeResource"}
                 {$_ -in (Write-Output AddVMHost, VMHost)} {"HostSystem"}
+                "VM" {"VirtualMachine"}
+            } ## end inner switch
+        } ## end case
+        ## VM
+        {$_ -in (Write-Output Get-DrsVMGroup, Get-DrsVMToVMRule, New-DrsVMGroup, New-DrsVMToVMRule, Set-DrsVMGroup, Set-DrsVMToVMRule)} {
+            Switch ($parameterName) {
+                "Cluster" {"ClusterComputeResource"}
+                {$_ -in (Write-Output AddVM, VM)} {"VirtualMachine"}
             } ## end inner switch
         } ## end case
     } ## end switch
 
     ## make the regex pattern to use for Name filtering for given View object (convert from globbing wildcard to regex pattern, to support globbing wildcard as input)
     $strNameRegex = if ($wordToComplete -match "\*") {$wordToComplete.Replace("*", ".*")} else {$wordToComplete}
+    ## the Get-View Filter hashtable to use for getting just the given View objects
+    $hshGetViewFilter = @{Name = "^${strNameRegex}"}
+    ## if the ViewType to get is VirtualMachine, add key to Filter hashtable to exclude templates
+    if ($strViewTypeToUseToGetDesiredObjects -eq "VirtualMachine") {$hshGetViewFilter["Config.Template"] = "False"}
     ## get the possible matches, create a new CompletionResult object for each
-    Get-View -ViewType $strViewTypeToUseToGetDesiredObjects -Property Name -Filter @{Name = "^${strNameRegex}"} | Sort-Object -Property Name -Unique | Foreach-Object {
+    Get-View -ViewType $strViewTypeToUseToGetDesiredObjects -Property Name -Filter $hshGetViewFilter | Sort-Object -Property Name -Unique | Foreach-Object {
         ## make the Completion and ListItem text values; happen to be the same for now, but could be <anything of interest/value>
         $strCompletionText = $strListItemText = if ($_.Name -match "\s") {'"{0}"' -f $_.Name} else {$_.Name}
         New-Object -TypeName System.Management.Automation.CompletionResult -ArgumentList (
@@ -178,4 +174,5 @@ Register-ArgumentCompleter -ParameterName Cluster -CommandName Export-DrsRule, G
 Register-ArgumentCompleter -ParameterName VMHost -CommandName Get-DrsVMHostGroup, Get-DrsVMToVMHostRule, New-DrsVMHostGroup, Set-DrsVMHostGroup -ScriptBlock $sbGetCoreVSphereItemNameCompleter
 ## reg an arg completer for the given param for this command
 Register-ArgumentCompleter -ParameterName AddVMHost -CommandName Set-DrsVMHostGroup -ScriptBlock $sbGetCoreVSphereItemNameCompleter
-
+Register-ArgumentCompleter -ParameterName VM -CommandName Get-DrsVMGroup, Get-DrsVMToVMHostRule, Get-DrsVMToVMRule, New-DrsVMGroup, New-DrsVMToVMRule, Set-DrsVMGroup, Set-DrsVMToVMRule -ScriptBlock $sbGetCoreVSphereItemNameCompleter
+Register-ArgumentCompleter -ParameterName AddVM -CommandName Set-DrsVMGroup -ScriptBlock $sbGetCoreVSphereItemNameCompleter
