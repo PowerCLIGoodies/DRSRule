@@ -2,14 +2,14 @@
 
 ### Changelog
 ### v2.0.0
-- \[enhancement] Restructure repository, putting module components into DRSRule subdirectory, which represents just the items required for the actual module. Rest of items at top-level of repository are supporting/meta items for the module, but not used within the module itself
-- \[enhancement] Add `Update-ThisModuleManifest.ps1` for ease of module maintenance for all those module contributors out there
-- \[enhancement] Rewrite types in native PowerShell Classes. This allows us to avoid the somewhat cludgey and often problematic DLL-reference-hell. A couple of things to note (*breaking changes!*):
+- \[enhancement] Rewrote custom types in native PowerShell Classes. This works around the somewhat cludgey and often problematic DLL-reference-hell. A couple of things to note (**breaking changes!**):
   - This increases the minimum PowerShell version to 5.0 from the previous 4.0 requirement
   - The classes are no longer in a namespace, `DRSRule`, but are "top-level" (due to the way that native PowerShell are implemented). So, class names in the module go from `DRSRule.VMGroup` in pre-v2 to `DRSRule_VMGroup` in this module version, for example
-- \[enhancement] Add argument completers to parameters, maximizing ease of use!
-- \[enhancement] Add Pester tests for rest of the cmdlets (beyond just the `Get-` cmdlets) -- go-o-o-o, good testing!
-- \[bugfix] Add `-Mandatory` parameter to `New-DrsVMtoVMRule`. Had been in code since v1.0, but commented out (found no reason for it being commented out). Also, `Get-DrsVMToVMRule` was not properly reporting `Mandatory` property on corresponding objects. Corrected that, now
+- \[enhancement] [#19](https://github.com/PowerCLIGoodies/DRSRule/issues/19) Added argument completers to parameters, maximizing ease of use! Argument completers are what enable tab-comletion of possible values for parameters
+- \[enhancement] [#20](https://github.com/PowerCLIGoodies/DRSRule/issues/20) Added Pester tests for rest of the cmdlets (beyond just the `Get-` cmdlets) -- go-o-o-o, good testing!
+- \[enhancement] Restructured repository, putting module components into DRSRule subdirectory, which represents just the items required for the actual module. Rest of items at top-level of repository are supporting/meta items for the module, but not used within the module itself
+- \[enhancement] Added `Update-ThisModuleManifest.ps1` for ease of module maintenance for all those module contributors out there
+- \[bugfix] Added `-Mandatory` parameter to `New-DrsVMtoVMRule`. Had been in code since v1.0, but commented out (found no reason for it being commented out). Also, `Get-DrsVMToVMRule` was not properly reporting `Mandatory` property on corresponding objects. Corrected that, now
 
 ### v1.2.1
 Jul 2018
