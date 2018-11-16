@@ -2,6 +2,7 @@
 
 ### Changelog
 ### v2.0.0
+Nov 2018
 - \[enhancement] Rewrote custom types in native PowerShell Classes. This works around the somewhat cludgey and often problematic DLL-reference-hell. A couple of things to note (**breaking changes!**):
   - This increases the minimum PowerShell version to 5.0 from the previous 4.0 requirement
   - The classes are no longer in a namespace, `DRSRule`, but are "top-level" (due to the way that native PowerShell are implemented). So, class names in the module go from `DRSRule.VMGroup` in pre-v2 to `DRSRule_VMGroup` in this module version, for example
