@@ -30,7 +30,7 @@ $arrObjectTypesToGet | Foreach-Object {
     Describe -Tags "Get" -Name "Get-Drs$_" {
         It "Gets a DRSRule $_ object" {
             $arrReturnTypes = if ($arrTmpObj = Invoke-Command -ScriptBlock {& "Get-Drs$_" | Select-Object -First 2}) {$arrTmpObj | Get-Member -ErrorAction:Stop | Select-Object -Unique -ExpandProperty TypeName} else {$null}
-            New-Variable -Name "bGetsOnly${_}Type" -Value ($arrReturnTypes -eq "DRSRule.$_")
+            New-Variable -Name "bGetsOnly${_}Type" -Value ($arrReturnTypes -eq "DRSRule_$_")
 
             ## gets only the desired object type should be $true
             (Get-Variable -ValueOnly -Name "bGetsOnly${_}Type") | Should Be $true
@@ -48,7 +48,7 @@ $arrObjectTypesToGet | Foreach-Object {
 
         It "Gets a DRSRule $_ object (from specific cluster, '$oClusterToUse')" {
             $arrReturnTypes = if ($arrTmpObj = Invoke-Command -ScriptBlock {& "Get-Drs$_" -Cluster $oClusterToUse | Select-Object -First 1}) {$arrTmpObj | Get-Member -ErrorAction:Stop | Select-Object -Unique -ExpandProperty TypeName} else {$null}
-            New-Variable -Name "bGetsOnly${_}Type" -Value ($arrReturnTypes -eq "DRSRule.$_")
+            New-Variable -Name "bGetsOnly${_}Type" -Value ($arrReturnTypes -eq "DRSRule_$_")
             $bGetsItemFromSpecifiedCluster = $arrTmpObj.Cluster -eq $oClusterToUse.Name
 
             ## gets only the desired object type should be $true
@@ -58,7 +58,7 @@ $arrObjectTypesToGet | Foreach-Object {
 
         It "Gets a DRSRule $_ object (from specific cluster, '$oClusterToUse', taking cluster from pipeline)" {
             $arrReturnTypes = if ($arrTmpObj = Invoke-Command -ScriptBlock {$oClusterToUse | & "Get-Drs$_" | Select-Object -First 1}) {$arrTmpObj | Get-Member -ErrorAction:Stop | Select-Object -Unique -ExpandProperty TypeName} else {$null}
-            New-Variable -Name "bGetsOnly${_}Type" -Value ($arrReturnTypes -eq "DRSRule.$_")
+            New-Variable -Name "bGetsOnly${_}Type" -Value ($arrReturnTypes -eq "DRSRule_$_")
             $bGetsItemFromSpecifiedCluster = $arrTmpObj.Cluster -eq $oClusterToUse.Name
 
             ## gets only the desired object type should be $true
